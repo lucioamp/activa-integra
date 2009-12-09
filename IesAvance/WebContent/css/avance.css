@@ -1,0 +1,110 @@
+@CHARSET "ISO-8859-1";
+
+body {
+	font-family : "arial";
+	font-size : 12pt;
+	text-align : left;
+	color : blue;
+	margin : 0.5em 0.5em 0.5em 0.5em;
+}
+
+h1 {
+	font-family : "helvetica";
+	font-size : 18pt;
+}
+
+h2 {
+	font-family : "helvetica";
+	font-size : 16pt;
+}
+
+ol {
+	list-style-type: decimal;
+	list-style-position: inside;
+}
+
+ul {
+	list-style-type: disc;
+	list-style-position: inside;
+}
+
+a {
+	text-decoration : none;
+	font-family : "arial";
+	color : blue;
+}
+
+.siteTitle {
+	color : red;
+	font-size : xx-large;
+	background-color : white;
+	font-family : Verdana, Arial;
+	padding : 0 0 0 0;
+}
+
+fieldset {
+	border : 1px solid blue;
+	margin : 0.3em;
+	padding : 0.5em;
+}
+
+.menuent {
+	color : blue;
+	font-size : 16px;
+	font-family : Tahoma;
+}
+
+.nivel1, .nivel2, .nivel3 {
+	margin-left : 2em;
+}
+
+#hd {
+	border-style: solid;
+	border-width: 0 0 4px 0;
+	border-color: gray;
+	background-color: beige;
+}
+
+#divLogin {
+	position: absolute;
+	top: 100px;
+	width: 190px;
+	height: 250px;
+}
+
+#divMenus {
+	position: absolute;
+	top: 340px;
+	width: 190px;
+}
+
+#docDiv {
+	position: absolute;
+	top: 100px;
+	left: 210px;
+	float: right;
+}
+
+.loginTxt {
+	color : black;
+	font-size : 14px;
+	background-color : white;
+	font-family : Tahoma, Arial;
+}
+
+.resultTab
+{
+font-size : 8pt;
+}
+
+.resultCel
+{
+padding: 6pt;
+}
+
+.resultHeader
+{
+padding: 6pt;
+color : red;
+font-weight: bold;
+}

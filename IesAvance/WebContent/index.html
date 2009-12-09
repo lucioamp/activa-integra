@@ -1,0 +1,292 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<title>Plataforma Avance</title>
+
+<!-- Standard reset, fonts and grids -->
+<link rel="stylesheet" type="text/css" href="css/Yui/reset-fonts-grids.css"/>
+
+<link rel="stylesheet" type="text/css" href="css/avance.css" />
+<link rel="stylesheet" type="text/css" href="css/rss.css" />
+
+<!-- Arquivos JS Yui -->
+<script type="text/javascript" src="js/Yui/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="js/Yui/container_core-min.js"></script>
+<script type="text/javascript" src="js/Yui/connection-min.js"></script>
+
+<!-- Arquivos JS aplicação -->
+<script type="text/javascript" src="js/valida.js"></script>
+<script type="text/javascript" src="js/criticaFormularios.js"></script>
+<script type="text/javascript" src="js/rss.js"></script>
+<script type="text/javascript" src="js/xforms.js"></script>
+<script type="text/javascript" src="js/ajaxBase.js"></script>
+
+<style>
+</style>
+
+<script>
+var ultimo = null;
+var ie = navigator.appName.indexOf("Explorer") != -1;
+
+function marcaAteRaiz(elem, marca)
+{
+	var prim = elem.parentNode;
+
+	while (prim)
+	{
+		prim.visitado = marca;
+		prim = prim.parentNode;
+	}
+}
+
+function removeAteRaiz(elem)
+{
+	// Não removo o primeiro nível
+	if ( elem.parentNode == null )
+		return;
+		 
+	// Estou abrindo um nó filho
+	if ( elem.visitado )
+		return;
+		 
+	var filho = elem;
+	while ( (filho.parentNode != null) && !filho.parentNode.visitado )
+	{
+		filho = filho.parentNode;
+	}
+
+	var noRem = filho.firstChild.nextSibling.nextSibling;
+	
+	while ( noRem )
+	{
+		prox = noRem.nextSibling;
+		filho.removeChild(noRem);
+		noRem = prox;
+	}
+}
+
+function criaMenu( local, menu, nivel )
+{
+    var i;
+    
+	for (i = 0; i < menu.length; i++) 
+	{
+		var sm = menu[i];
+		
+		var noDiv = document.createElement("div");
+		
+		noDiv.setAttribute("id", local.id + "_" + sm.text);
+		noDiv.setAttribute("style", "cursor: pointer");
+		if ( nivel > 0 )
+			noDiv.style.marginLeft = "2em";
+			
+		noDiv.onclick = function(ev) {
+			var target;
+			var destino = ie ? event.srcElement : ev.target;
+			if ( ie ) ev = event;
+			
+			// Cliquei fora do menu
+			if ( !("menuEnt" in destino) )
+				return;
+				
+			var entrada = destino.menuEnt;
+			
+			// Nó folha
+			if ( "submenu" in entrada)
+			{
+				var nf = entrada.submenu;
+				
+				if ( "length" in nf )
+				{
+					if ( ultimo != null )
+					{			
+						marcaAteRaiz(this, true);
+						removeAteRaiz(ultimo);
+						marcaAteRaiz(this, false);
+					}
+					
+					for (i = 0; i < nf.length; i++) 
+						this.appendChild(nf[i].objeto);
+				}
+			}
+
+			target = "docDiv";
+			if ( "target" in entrada )
+				target = entrada.target;
+				
+			if ( "url" in entrada )
+			{
+				var url = entrada.url;
+
+				if ( (url.indexOf("<idSessao>") != -1) &&
+					 (getCookie("JSESSIONID") != "") )
+				{
+					url = url.replace(/<idSessao>/, getCookie("JSESSIONID"));
+				}
+				
+				abrePaginaSimples( url, target );
+			}
+
+			ultimo = this;
+			
+			ev.cancelBubble = true;
+		}
+		
+		var noSpan = document.createElement("span");
+
+		noSpan.style.fontFamily = "arial";
+		noSpan.style.color = "blue";
+		
+		var texto = document.createTextNode(sm.text);
+
+		noSpan.appendChild(texto);
+
+		noDiv.appendChild(noSpan);
+		noDiv.appendChild(document.createElement("br"));
+		
+		if ( ("submenu" in sm) && ("length" in sm.submenu) )
+			criaMenu( noDiv, sm.submenu, nivel + 1 );
+			
+		sm.objeto = noDiv;
+		
+		// Atributo auxiliar criado
+		noSpan.menuEnt = sm;
+
+		// Atributo auxiliar criado para o mecanismo de abrir e fechar menus
+		noDiv.visitado = false;
+	}
+}
+
+function exibeNivelMenu( local, entradas )
+{
+	var i;
+	
+	for (i = 0; i < entradas.length; i++) 
+		local.appendChild(entradas[i].objeto);
+}
+
+var defMenu = [
+	{ text : "Login", url: "/IesAvance/login.html", target: "divLogin"
+	},
+	{ text : "Listar", submenu: [
+			{ text: "Aplicação", url: "/IesAvance/rest/<idSessao>/aplicacao", target: "docDiv" },
+			{ text: "Curso", url: "/IesAvance/rest/<idSessao>/curso", target: "docDiv" },
+			{ text: "Minhas Turmas", url: "/IesAvance/rest/<idSessao>/turma", target: "docDiv"	}
+			]
+	},
+	{ text : "Incluir", submenu: [
+			{ text: "Usuario", url: "/IesAvance/rest/usuario/form", target: "docDiv" },
+			{ text: "Curso", url: "/IesAvance/rest/<idSessao>/curso/form", target: "docDiv" },
+			{ text: "Aplicação", url: "/IesAvance/rest/<idSessao>/aplicacao/form", target: "docDiv" }
+			]
+	}
+/*	
+	,
+	{ text : "Secretaria", submenu: [
+			{ text: "Usuario", submenu: [
+					{ text: "Inserir", url: "/IesForum/rest/5F9FFFC1B0AD77134B0D30608BB3A0FB/2", target: "" }
+				] 
+			},
+			{ text: "Curso", submenu: [
+					{ text: "Inserir", url: "Curso/CadCurso.jsp", target: "" }
+				] 
+			},
+			{ text: "Disciplina", submenu: [
+					{ text: "Inserir", url: "Curso/CadTurma.jsp", target: "" }
+				] 
+			},
+			{ text: "Turma", submenu: [
+					{ text: "Inserir", url: "Curso/CadDisciplina.jsp", target: "" }
+				] 
+			}
+			]
+	},
+	{ text : "Professor", submenu: [
+			{ text: "Usuario", submenu: [
+					{ text: "Inserir", target: "" }
+				] 
+			},
+			{ text: "Curso", submenu: [
+					{ text: "Inserir", target: "" }
+				] 
+			},
+			{ text: "Disciplina", submenu: [
+					{ text: "Inserir", target: "" }
+				] 
+			},
+			{ text: "Turma",  submenu: [
+					{ text: "Inserir", target: "" }
+				] 
+			}
+		]
+	},
+	{ text : "Aluno", submenu: [
+			{ text: "Usuario", submenu: [
+					{ text: "Inserir", target: "" }
+				] 
+			},
+			{ text: "Curso", submenu: [
+					{ text: "Inserir", target: "" }
+				] 
+			},
+			{ text: "Disciplina", submenu: [
+					{ text: "Inserir", target: "" }
+				] 
+			},
+			{ text: "Turma", submenu: [
+					{ text: "Inserir", target: "" }
+				] 
+			}
+		]
+	}
+*/	
+];
+
+function exibeInfoLogin(f)
+{
+	abreFormulario(f, false);
+	setTimeout("abrePaginaSimples('/IesAvance/informaLogin.jsp', 'divLogin')",5000);
+	return false;
+}
+
+function initInterface()
+{
+	var divLocal = document.getElementById("divMenus");
+
+	criaMenu( divLocal, defMenu, 0 );
+	exibeNivelMenu( divLocal, defMenu );
+	abrePaginaSimples( "/IesAvance/informaLogin.jsp", "divLogin" );
+
+	if ( getCookie("JSESSIONID") != "" )
+	{
+		abrePaginaSimples( "/IesAvance/rest/" + getCookie("JSESSIONID") + 
+						   "/turma", "docDiv" );
+	}
+	else {
+		msg = "<p>O AvaNCE é um protótipo de um ambiente de aprendizagem baseado em idéias da Web 2.0. " +
+              "<br/><br/>Ele foi construído com o propósito de verificar a viabilidade das propostas apresentadas " +
+              "na Dissertação de Mestrado, <br/>" +
+              "\"Integração Automática de Aplicações Externas em um Ambiente " +
+              "de Aprendizagem Apoiado na Web 2.0\" - PPGI/IM-NCE/UFRJ - 2009, <br/>" +
+              "sendo capaz de integrar aplicações externas automaticamente a partir da descrição com WADL de " +
+              "suas APIs.</p>";
+		document.getElementById("docDiv").innerHTML = msg;
+	}
+}
+
+</script>
+</head>
+<body onload="initInterface();">
+
+<div id="hd">
+    <h1 class="siteTitle"><img src="img/AVANCE_AZUL_BITMAP_60px.jpg"/></h1>
+</div>
+<div id="divLogin">
+</div>
+<div id="divMenus">
+</div>
+<div id="docDiv">
+</div>
+</body>
+</html>

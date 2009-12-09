@@ -1,0 +1,61 @@
+@CHARSET "ISO-8859-1";
+
+.rsstitle {
+	font-size: 28px;
+	font-weight: bold;
+	font-family: verdana, arial;
+	border-style: solid;
+	border-width: 0 0 2px 0;
+	color: black;
+	cursor: pointer;
+}
+
+.rssdesc {
+	font-size: 18px;
+	font-family: tahoma;
+	color: black;
+}
+
+.rssimage {
+}
+
+.rssitems {
+}
+
+.rssitem {
+	border-style: solid;
+	border-width: 1px;
+	padding: 0.4cm;
+	border-color: red;
+}
+
+.rssbot {
+	border-style: none;
+	text-align: right;
+	padding: 0.4cm;
+}
+
+.rssitemtitle {
+	font-size: 14px;
+	font-weight: bold;
+	font-family: verdana, arial;
+	border-style: solid;
+	border-width: 0 0 2px 0;
+	color: blue;
+}
+
+.rssitemlink {
+	cursor: pointer;
+}
+	
+.rssitemdate {
+	font-size: 12px;
+	font-family: verdana, arial;
+	color: gray;
+}
+
+.rssitemcontent {
+	font-size: 12px;
+	padding: 0.4cm 0.4cm 0.4cm 1cm;
+	color: black;
+}
