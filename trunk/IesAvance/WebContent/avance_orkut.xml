@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module>
+<ModulePrefs title="AvaNCE" 
+height="250" 
+description="Web 2.0 based NCE/UFRJ's LMS" 
+author="NCE/UFRJ" 
+author_email="mauricio@nce.ufrj.br" 
+author_location="Rio de Janeiro, Brazil"
+screenshot="" 
+thumbnail="" 
+title_url="">
+<Require feature="opensocial-0.8"/>
+</ModulePrefs>
+
+<UserPref name="cpf" display_name="CPF" required="true" />
+<UserPref name="senha" display_name="Senha" required="true" />
+
+<Content type="html">
+<![CDATA[
+<link rel="stylesheet" type="text/css" href="http://labase.nce.ufrj.br/IesAvance/css/rss.css" />
+<div id="content_div"></div>
+<div id="docDiv"></div>
+
+<script type="text/javascript" src="js/Yui/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="js/Yui/container_core-min.js"></script>
+<script type="text/javascript" src="js/Yui/connection-min.js"></script>
+
+<script type="text/javascript" src="js/valida.js"></script>
+<script type="text/javascript" src="js/criticaFormularios.js"></script>
+<script type="text/javascript" src="js/rss.js"></script>
+<script type="text/javascript" src="js/xforms.js"></script>
+<script type="text/javascript" src="js/ajaxBase.js"></script>
+
+<script type="text/javascript">
+var URL_BASE = "http://labase.nce.ufrj.br";
+
+
+// -----------------------------------------------------------------------------
+
+// Problema: O sandbox do igoogle parece ainda n�o suportar gadgets.*
+// No orkut funciona...
+// erro no igoogle: gadgets.Prefs is not a constructor.
+
+
+var prefs = new gadgets.Prefs();
+// var prefs = new _IG_Prefs(); 
+
+
+
+
+
+var destino = document.getElementById('content_div');
+
+function showMsg(msg) 
+{
+	var htmlmsg = '<div style="text-align:left; padding-top:5px;">' + msg + '</div>';
+	destino.innerHTML = htmlmsg;
+}
+
+function loginModule() 
+{
+	var params = {};
+
+	var postdata = {
+  		cpf : prefs.getString("cpf"),
+  		senha : prefs.getString("senha")
+	};
+
+	var postdata = {
+  		cpf : '67269079749',
+  		senha : 'mauricio'
+	};
+
+
+    params[gadgets.io.RequestParameters.CONTENT_TYPE] = gadgets.io.ContentType.DOM;
+	params[gadgets.io.RequestParameters.METHOD] = gadgets.io.MethodType.POST;
+	
+	postdata = gadgets.io.encodeValues(postdata);
+
+
+
+
+
+// Erro:
+// No FF postdata esta certo com os valores do cpf e senha.
+// No IE esta vazio...
+
+alert(postdata);
+	
+	
+	
+	params[gadgets.io.RequestParameters.POST_DATA]= postdata;
+
+  
+	var url = "http://labase.nce.ufrj.br/IesAvance/rest/usuario/login";
+	// var url = "http://labase.nce.ufrj.br/IesAvance/rest/sessao";
+	// var url = "http://ma.gnolia.com/rss/full/people/mncbomfim";
+	// var url = "http://equipe.nce.ufrj.br/mauricio/GoogleGadgetsAPI/result.asp";
+	
+	gadgets.io.makeRequest(url, response, params);
+}
+
+function response(obj) 
+{
+
+//  alert (obj.text);
+
+	if (obj == null) {
+	   showMsg ("Nao retornou o XML: obj == null");
+	   return;
+	}
+	else {
+	   if (typeof(obj) != "object") {
+	      showMsg ("Nao retornou o XML: typeof(obj) != object");
+	      return;
+	   }
+	   else {
+		   if (obj.data.firstChild == null) {
+	      		   showMsg ("Nao retornou o XML: obj.data.firstChild == null");
+	      		   return;
+	           }
+	   }
+	}
+
+	parseRSS(obj.data, destino);
+	
+}
+
+
+
+
+// -----------------------------------------------------------------------------
+// Problema: O sandbox do igoogle parece ainda n�o suportar gadgets.*
+// erro no igoogle: gadgets.util is undefined.
+
+
+gadgets.util.registerOnLoadHandler ( loginModule );
+
+</script>
+]]>
+</Content>
+</Module>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<jardesc>
+    <jar path="D:/src/Eclipse/AvaResin/IesForum/WebContent/WEB-INF/lib/Avance.jar"/>
+    <options buildIfNeeded="true" compress="true" descriptionLocation="/IesAvance/Avance.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
+    <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
+    <selectedProjects/>
+    <manifest generateManifest="true" manifestLocation="" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
+        <sealing sealJar="false">
+            <packagesToSeal/>
+            <packagesToUnSeal/>
+        </sealing>
+    </manifest>
+    <selectedElements exportClassFiles="false" exportJavaFiles="false" exportOutputFolder="true">
+        <file path="/IesAvance/build/classes/nucleo/wadl/NivelWADL.class"/>
+        <file path="/IesAvance/build/classes/nucleo/wadl/ParametroPersist.class"/>
+        <file path="/IesAvance/build/classes/avance/Distribuidor.class"/>
+        <file path="/IesAvance/build/classes/nucleo/lista/ListaAplicacaoDaTurma.class"/>
+        <file path="/IesAvance/build/classes/util/interpretador/ExcecaoParser.class"/>
+        <file path="/IesAvance/build/classes/nucleo/wadl/AutenticacaoPersist.class"/>
+        <file path="/IesAvance/build/classes/util/arquivo/AcessoPagina.class"/>
+        <file path="/IesAvance/build/classes/nucleo/wadl/NoArvoreResposta.class"/>
+        <file path="/IesAvance/build/classes/util/banco/Persistencia.class"/>
+        <file path="/IesAvance/build/classes/util/interpretador/ParseNode.class"/>
+        <file path="/IesAvance/build/classes/nucleo/wadl/Autenticacao.class"/>
+        <file path="/IesAvance/build/classes/util/interpretador/WadlParser.class"/>
+        <file path="/IesAvance/build/classes/nucleo/persist/CursoPersist.class"/>
+        <file path="/IesAvance/build/classes/nucleo/nivel/Turma.class"/>
+        <file path="/IesAvance/build/classes/avance/Executor.class"/>
+        <file path="/IesAvance/build/classes/avance/AvanceRestParser.class"/>
+        <file path="/IesAvance/build/classes/nucleo/wadl/MetodoPersist.class"/>
+        <file path="/IesAvance/build/classes/nucleo/persist/TurmaPersist.class"/>
+        <file path="/IesAvance/build/classes/nucleo/lista/ListaCurso.class"/>
+        <file path="/IesAvance/build/classes/nucleo/output/GeraSaidaAplicacao.class"/>
+        <file path="/IesAvance/build/classes/util/config/PlatGlobalDefs.class"/>
+        <file path="/IesAvance/build/classes/nucleo/output/GeraSaida.class"/>
+        <file path="/IesAvance/build/classes/nucleo/persist/DisciplinaPersist.class"/>
+        <file path="/IesAvance/build/classes/util/arquivo/AcessoPaginaPersist.class"/>
+        <file path="/IesAvance/build/classes/nucleo/output/GeraSaidaAvance.class"/>
+        <file path="/IesAvance/build/classes/nucleo/output/GeraSaidaCurso.class"/>
+        <file path="/IesAvance/build/classes/nucleo/lista/ListaAplicacao.class"/>
+        <file path="/IesAvance/build/classes/util/interpretador/ContextNode.class"/>
+        <file path="/IesAvance/build/classes/nucleo/wadl/Metodo.class"/>
+        <file path="/IesAvance/build/classes/nucleo/wadl/Parametro.class"/>
+        <file path="/IesAvance/build/classes/nucleo/persist/AplicacaoPersist.class"/>
+        <file path="/IesAvance/build/classes/util/arquivo/ExcecaoArquivo.class"/>
+        <file path="/IesAvance/build/classes/nucleo/wadl/RecursoPersist.class"/>
+        <file path="/IesAvance/build/classes/nucleo/usuario/UsuarioPersist.class"/>
+        <file path="/IesAvance/build/classes/nucleo/output/GeraSaidaUsuario.class"/>
+        <file path="/IesAvance/build/classes/util/interpretador/ContextList.class"/>
+        <file path="/IesAvance/build/classes/nucleo/output/GeraSaidaDisciplina.class"/>
+        <file path="/IesAvance/build/classes/nucleo/persist/AplicacaoDaTurmaPersist.class"/>
+        <file path="/IesAvance/build/classes/nucleo/lista/ListaTurma.class"/>
+        <file path="/IesAvance/build/classes/nucleo/usuario/SessaoPersist.class"/>
+        <file path="/IesAvance/build/classes/nucleo/usuario/SessaoLog.class"/>
+        <file path="/IesAvance/build/classes/util/interpretador/RestParser.class"/>
+        <file path="/IesAvance/build/classes/util/config/PlatResources.class"/>
+        <file path="/IesAvance/build/classes/nucleo/lista/ListaDisciplina.class"/>
+        <file path="/IesAvance/build/classes/nucleo/nivel/AplicacaoDaTurma.class"/>
+        <file path="/IesAvance/build/classes/util/interpretador/DomParser.class"/>
+        <file path="/IesAvance/build/classes/avance/FinalizaLoginOPenID.class"/>
+        <file path="/IesAvance/build/classes/nucleo/nivel/Disciplina.class"/>
+        <file path="/IesAvance/build/classes/util/interpretador/StrContextNode.class"/>
+        <file path="/IesAvance/build/classes/nucleo/wadl/Resposta.class"/>
+        <file path="/IesAvance/build/classes/nucleo/nivel/Aplicacao.class"/>
+        <file path="/IesAvance/build/classes/avance/Carrega.class"/>
+        <file path="/IesAvance/build/classes/nucleo/wadl/NivelWADLPersist.class"/>
+        <file path="/IesAvance/build/classes/nucleo/wadl/RespostaPersist.class"/>
+        <file path="/IesAvance/build/classes/nucleo/usuario/Sessao.class"/>
+        <file path="/IesAvance/build/classes/nucleo/nivel/Nivel.class"/>
+        <file path="/IesAvance/build/classes/avance/ConsumerOpenID.class"/>
+        <file path="/IesAvance/build/classes/nucleo/output/GeraSaidaTurma.class"/>
+        <file path="/IesAvance/build/classes/util/interpretador/ResponseParser.class"/>
+        <file path="/IesAvance/build/classes/nucleo/wadl/NoArvoreRespostaPersist.class"/>
+        <file path="/IesAvance/build/classes/nucleo/usuario/Usuario.class"/>
+        <file path="/IesAvance/build/classes/util/interpretador/IntContextNode.class"/>
+        <file path="/IesAvance/build/classes/nucleo/nivel/Curso.class"/>
+        <file path="/IesAvance/build/classes/nucleo/nivel/NivelAvance.class"/>
+        <file path="/IesAvance/build/classes/nucleo/output/GeraSaidaAplicDaTurma.class"/>
+        <file path="/IesAvance/build/classes/util/banco/ExcecaoBanco.class"/>
+        <file path="/IesAvance/build/classes/nucleo/wadl/Recurso.class"/>
+        <file path="/IesAvance/build/classes/nucleo/lista/ListaNivelAvance.class"/>
+        <file path="/IesAvance/build/classes/nucleo/persist/NivelAvancePersist.class"/>
+        <file path="/IesAvance/build/classes/util/arquivo/Arquivo.class"/>
+    </selectedElements>
+</jardesc>
