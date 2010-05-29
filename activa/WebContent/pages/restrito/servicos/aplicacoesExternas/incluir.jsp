@@ -13,6 +13,10 @@
 
 			var botaoVoltar = $this.find('button#voltar').click(function() { $this.remove(); $oldPage.fadeIn(600); });
 
+			$this.find('button#listar').click(function() {
+				$this.newPage('../../MembroAplicacaoServlet?opcao=C', {});
+			});
+
 			$this.find('button#salvar').click(function() {
 				var idAplicacao = $this.find('#idAplicacao');
 				var idRecurso = $this.find('#idRecurso');
@@ -125,7 +129,7 @@
 			<td colspan="3">&nbsp;</td>
 		</tr>
 		<tr>
-			<td colspan="2">&nbsp;</td>
+			<td colspan="2" width="70%">&nbsp;</td>
 			<td style="font-size: 12px;">
 				<fieldset style="width:230px;">
 					<legend><span style="color: CornflowerBlue;">Permissão</span></legend>
@@ -169,6 +173,8 @@
 		</tr>
 		<tr>
 			<td align="right" colspan="3">
+			<button type="button" class="ui-state-default ui-corner-all"
+				name=""listar"" id="listar">Listar</button>
 			<button type="button" class="ui-state-default ui-corner-all"
 				name="voltar" id="voltar">Voltar</button>
 			<button type="button" class="ui-state-default ui-corner-all"

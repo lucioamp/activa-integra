@@ -159,6 +159,7 @@ public class MembroAplicacaoServlet extends HttpServlet {
 				String tempoValor = (String) request.getParameter("tempoValor");
 				
 				UsuarioAplicacao usuarioAplicacao = new UsuarioAplicacao();
+				usuarioAplicacao.setPkUsuario(usuario.getPkUsuario());
 				usuarioAplicacao.setIdAplicacao(idAplicacao);
 				usuarioAplicacao.setIdRecurso(idRecurso);
 				usuarioAplicacao.setPermissao(permissao);
