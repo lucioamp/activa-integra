@@ -1,0 +1,172 @@
+.tabelaResult
+{
+	font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+	font-size: 12px;
+	text-align: left;
+	border-collapse: collapse;
+	width: 100%;
+}
+
+.tabelaResult caption
+{
+	text-align: center;
+	font: bold 18px arial, helvetica, sans-serif;
+	background: transparent;
+	padding: 6px 4px 8px 0px;
+	color: #03476F;
+	text-transform: uppercase;
+}
+
+.tabelaResult th
+{
+	font-size: 13px;
+	font-weight: normal;
+	background: #b9c9fe url('../images/table/gradhead.png') repeat-x;
+	border-top: 2px solid #d3ddff;
+	border-bottom: 1px solid #fff;
+	color: #039;
+	padding: #4em;
+}
+.tabelaResult td
+{
+	border-bottom: 1px solid #fff;
+	color: #669;
+	border-top: 1px solid #fff;
+	background: #e8edff url('../images/table/gradback.png') repeat-x;
+	padding: #4em;
+}
+.tabelaResult tfoot tr td
+{
+	background: #e8edff;
+	font-size: 12px;
+	color: #99c;
+}
+.tabelaResult tbody tr:hover td
+{
+	background: #d0dafd url('../images/table/gradhover.png') repeat-x;
+	color: #339;
+}
+
+
+/*.tabelaResult
+{
+	border-collapse: collapse;
+	border: 1px solid #03476F;
+	font: normal 11px verdana, arial, helvetica, sans-serif;
+	color: #363636;
+	background: #87B3D3;
+	width: 100%;
+}
+
+.tabelaResult caption
+{
+	text-align: center;
+	font: bold 18px arial, helvetica, sans-serif;
+	background: transparent;
+	padding: 6px 4px 8px 0px;
+	color: #03476F;
+	text-transform: uppercase;
+}
+
+.tabelaResult caption button
+{
+	font-size: 12px;
+}
+
+.tabelaResult td,.tabelaResult th
+{
+	border: 1px dotted #03476F;
+	padding: #4em;
+	color: #363636;
+}
+
+.tabelaResult thead th,.tabelaResult tfoot th
+{
+	font: bold 11px verdana, arial, helvetica, sans-serif;
+	border: 1px solid #03476F;
+	background: #958B77;
+	color: #FFFFFF;
+	padding-top: 3px;
+	text-align: center;
+}
+
+.tabelaResult tbody td a
+{
+	background: transparent;
+	text-decoration: none;
+	color: #363636;
+}
+
+.tabelaResult tbody td a:hover
+{
+	-background: #C2F64D;
+	color: #363636;
+}
+
+.tabelaResult tbody th a
+{
+	font: normal 11px verdana, arial, helvetica, sans-serif;
+	background: transparent;
+	text-decoration: none;
+	font-weight: normal;
+	color: #363636;
+}
+
+.tabelaResult tbody th a:hover
+{
+	background: transparent;
+	color: #363636;
+}
+
+.tabelaResult tbody th,.tabelaResult tbody td
+{
+	vertical-align: top;
+	text-align: left;
+}
+
+.tabelaResult tfoot td
+{
+	border: 1px solid #03476F;
+	background: #4591AD;
+	padding-top: 3px;
+	color: #FFFFFF;
+}
+
+.tabelaResult .odd
+{
+	background: #0BB3D7;
+}
+
+.tabelaResult tbody tr:hover
+{
+	background: #82AA9E;
+	border: 1px solid #03476F;
+	color: #FFFFFF;
+}
+
+.tabelaResult tbody tr:hover th,.tabelaResult tbody tr .odd:hover th
+{
+	background: #6BAEE4;
+	color: #FFFFFF;
+}
+
+.tabelaResult tbody td
+{
+	text-align: center;
+}*/
+
+.tabelaresult2
+{	
+}
+
+.tabelaResult2 tbody td
+{
+	text-align: left;
+}
+
+.tabelaResult2 tbody td a
+{
+	background: transparent;
+	text-decoration: none;
+	color: #363636;
+}

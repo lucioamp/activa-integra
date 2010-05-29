@@ -1,0 +1,240 @@
+#menuBar
+{
+	position: absolute;
+	bottom: -1;
+	width: 100%;
+	height: 30px;
+	background: url(../images/bar.gif) left top repeat-x;
+	z-index: 20000;
+}
+
+#menuBar #botaoIniciar
+{
+	position: absolute;
+	top: 15%;
+	left: 0.5%;
+}
+
+#menuBar table#minimizedWindows
+{
+	position: absolute;
+	top: 4%;
+	left: 6%;
+	padding: 0;
+	margin: 0;
+}
+
+#menuBar table#minimizedWindows
+{
+	height: 100%;
+}
+
+#menuBar table#minimizedWindows tr td
+{
+	padding: 0;
+	margin: 0;
+}
+
+#menuBar table#minimizedWindows tr td a
+{
+	text-decoration: none;
+	color: white;
+}
+
+#menuBar table#minimizedWindows tr td.taskbutton-left
+{
+	background: url( ../images/taskbutton.gif ) no-repeat 0 0;
+}
+
+#menuBar table#minimizedWindows tr td.taskbutton-left-focused
+{
+	background: url( ../images/taskbutton.gif ) no-repeat 0 -84px;
+}
+
+#menuBar table#minimizedWindows tr td.taskbutton-right
+{
+	background: url( ../images/taskbutton.gif ) no-repeat 0 -28px;
+}
+
+#menuBar table#minimizedWindows tr td.taskbutton-right-focused
+{
+	background: url( ../images/taskbutton.gif ) no-repeat 0 -112px;
+}
+
+#menuBar table#minimizedWindows tr td.taskbutton-center,#menuBar table#minimizedWindows tr td.taskbutton-center-focused
+{
+	text-align: center;
+	width: auto;
+	font-size: 12px;
+}
+
+#menuBar table#minimizedWindows tr td.taskbutton-center
+{
+	background: url( ../images/taskbutton.gif ) repeat-x 0 -56px;
+}
+
+#menuBar table#minimizedWindows tr td.taskbutton-center-focused
+{
+	background: url( ../images/taskbutton.gif ) repeat-x 0 -140px;
+}
+
+#menuBar table#minimizedWindows tr td.taskbutton-center button
+{
+	color: #fff;
+}
+
+#menuOption
+{
+	display: none;
+	position: absolute;
+	background-position: 0pt 3px;
+	background: #404347;
+	color: white;
+	width: 290px;
+	height: 310px;
+	bottom: 0;
+	margin: 5px 0px 29px 5px;
+	border: 1px solid #333;
+	z-index: 21000;
+}
+
+* html #menuOption
+{
+	height: 320px;
+}
+
+#menuOption #conteudo
+{
+	border: 1px solid #9D9FA1;
+	position: absolute;
+	width: 99.2%;
+	height: 99.2%;
+}
+
+* html #menuOption #conteudo
+{
+	width: 100%;
+	height: 100%;
+}
+
+#menuOption #conteudo #miniUserImg
+{
+	margin: 3px 0px 0px 8px;
+	float: left;
+}
+
+#menuOption #conteudo #nomeMembro
+{
+	display: block;
+	float: left;
+	margin: 5px 0px 0px 7px;
+	font-size: 10px;
+}
+
+#menuOption  #conteudo #servicos
+{
+	position: absolute;
+	background: white;
+	width: 130px;
+	height: 85%;
+	top: 9%;
+	left: 2%;
+}
+
+#menuOption #conteudo #sub_servicos
+{
+	display: none;
+	position: absolute;
+	width: 140px;
+	height: 95%;
+	background: white;
+	border: 2px solid black;
+}
+
+#menuOption  #conteudo #servicos ul,#menuOption  #conteudo #sub_servicos ul
+{
+	margin: 0 0 0 0;
+	padding: 0;
+	list-style-type: none;
+	font: normal 92% 'Trebuchet MS', 'Lucida Grande', Arial, sans-serif;
+}
+
+#menuOption  #conteudo #servicos ul li span,#menuOption  #conteudo #sub_servicos ul li span
+{
+	position: absolute;
+	left: 95%;
+}
+
+* html #menuOption  #conteudo #servicos li a,#menuOption  #conteudo #sub_servicos li a
+{ /* IE only */
+	width: 100%; /*IE 5*/
+}
+
+#menuOption  #conteudo #servicos li a,#menuOption  #conteudo #sub_servicos  li a
+{
+	display: block;
+	padding-left: 5px;
+	text-decoration: none;
+	color: #333;
+}
+
+#menuOption  #conteudo #servicos li a:hover,#menuOption  #conteudo #sub_servicos li a:hover
+{
+	background: url(../images/winbar-bg.gif) left top repeat-x;
+	width: 95.5%;
+}
+
+* html #menuOption  #conteudo #servicos li a:hover,#menuOption  #conteudo #sub_servicos li a:hover
+{
+	width: 96.5%;
+}
+
+#menuOption #conteudo #perfil
+{
+	position: absolute;
+	float: right;
+	width: 140px;
+	height: 95%;
+	top: 1%;
+	left: 50%;
+}
+
+#menuOption #perfil img.membroFoto
+{
+	width: 135px;
+	height: 120px;
+	border: 1px solid black;
+}
+
+#menuOption #perfil span#imagemMembro:hover
+{
+	cursor: hand;
+}
+
+* html #menuOption #perfil p
+{
+	margin: 5px 0px;
+}
+
+#menuOption #perfil a
+{
+	padding: 2px 10px;
+	display: block;
+	text-decoration: none;
+	color: white;
+}
+
+#menuOption #perfil a:visited
+{
+	color: white;
+}
+
+#menuOption #perfil a:hover
+{
+	color: green;
+}
+
+#menuOption #perfil hr
+{
+	
+}

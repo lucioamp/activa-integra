@@ -1,0 +1,102 @@
+table.treeTable {
+  border: 1px solid #888;
+  border-collapse: collapse;
+  margin: 1em auto;
+  width: 90%;
+  background: #fff;
+  color: #000;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: .99em;
+  line-height: 1.5;
+}
+
+/* Caption
+ * ------------------------------------------------------------------------- */
+table.treeTable caption {
+  font-size: .9em;
+  font-weight: bold;
+}
+
+/* Header
+ * ------------------------------------------------------------------------- */
+table.treeTable thead {
+  background: #aaa url(../images/treetable/bg-table.treeTable-thead.png) repeat-x top left;
+  font-size: .9em;
+}
+
+table.treeTable thead tr th {
+  border: 1px solid #888;
+  font-weight: normal;
+  padding: .3em 1.67em .1em 1.67em;
+  text-align: left;
+}
+
+/* Body
+ * ------------------------------------------------------------------------- */
+table.treeTable tbody tr td {
+  cursor: default;
+  padding: .3em 1.5em;
+}
+
+table.treeTable tbody tr.even {
+  background: #f3f3f3;
+}
+
+table.treeTable tbody tr.odd {
+  background: #fff;
+}
+
+table.treeTable span {
+  background-position: center left;
+  background-repeat: no-repeat;
+  padding: .2em 0 .2em 1.5em;
+}
+
+table.treeTable span.file {
+  background-image: url(../images/treetable/page_white_text.png);
+}
+
+table.treeTable span.folder {
+  background-image: url(../images/treetable/folder.png);
+}
+
+table.treeTable span.list {
+  background-image: url(../images/treetable/list_bullet.png);
+}
+
+
+table.treeTable tr td .expander {
+  background-position: left center;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  padding: 0;
+  zoom: 1; /* IE7 Hack */
+}
+
+table.treeTable tr.collapsed td .expander {
+  background-image: url(../images/treetable/toggle-expand-dark.png);
+}
+
+table.treeTable tr.expanded td .expander {
+  background-image: url(../images/treetable/toggle-collapse-dark.png);
+}
+
+/* jquerytable.treeTable.sortable.treeTable
+ * ------------------------------------------------------------------------- */
+table.treeTable tr.selected, table.treeTable tr.accept {
+  background-color: #3875d7;
+  color: #fff;
+}
+
+table.treeTable tr.collapsed.selected td .expander, table.treeTable tr.collapsed.accept td .expander {
+  background-image: url(../images/treetable/toggle-expand-light.png);
+}
+
+table.treeTable tr.expanded.selected td .expander, table.treeTable tr.expanded.accept td .expander {
+  background-image: url(../images/treetable/toggle-collapse-light.png);
+}
+
+table.treeTable .ui-draggable-dragging {
+  color: #000;
+  z-index: 1;
+}
