@@ -102,9 +102,6 @@
 				}
 			}
 			
-			
-			
-			
 			// Recurso
 			Recurso recurso = (Recurso)request.getAttribute("recurso");
 			out.print("$this.find('#idRecurso').val('" + recurso.getIdRecurso() + "');");
@@ -118,10 +115,22 @@
 					if (parametro.isRequired()) {
 						disabled = "checked disabled=true";
 					}
+					else if (parametro.isUsarParametro()) {
+						disabled = "checked";
+					}
+					
+					String bloquearChecked = "";
+					if (parametro.isBloquearValor()) {
+						bloquearChecked = "checked";
+					}
 					
 					out.print("var usarCheck = $('<input type=checkbox id=usar style=display:inline; " + disabled + " value=" + parametro.getIdParametro() + " />');");
-					out.print("var paramValor = $('<input type=text id=paramValor style=width:200px;display:inline;/>');");
-					out.print("var permitirCheck = $('<input type=checkbox id=bloquear style=display:inline; value=" + parametro.getIdParametro() + " />');");
+					out.print("var paramValor = $('<input type=text id=paramValor style=width:200px;display:inline; />');");
+					out.print("var bloquearCheck = $('<input type=checkbox id=bloquear style=display:inline; " + bloquearChecked + " value=" + parametro.getIdParametro() + " />');");
+					
+					if (parametro.getValorPadrao() != null) {
+						out.print("paramValor.val('" + parametro.getValorPadrao() + "');");	
+					}
 					
 					out.print("var table = $this.find('table tbody');");
 					out.print("var tr = $('<tr></tr>');");
@@ -130,7 +139,7 @@
 					out.print(".append('&nbsp;')");
 					out.print(".append('<span style=color:green;font-size:12px;>" + parametro.getTitle() + "</span>'))");
 					out.print(".append($('<td width=200></td>').html(paramValor))");
-					out.print(".append($('<td></td>').html(permitirCheck).append('<span style=font-size:12px;>Bloquear Valor</span>'))");
+					out.print(".append($('<td></td>').html(bloquearCheck).append('<span style=font-size:12px;>Bloquear Valor</span>'))");
 					out.print(");");
 					
 				}
