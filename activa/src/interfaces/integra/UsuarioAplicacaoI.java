@@ -11,5 +11,6 @@ public interface UsuarioAplicacaoI {
 	public int excluir (UsuarioAplicacao usuarioAplicacao) throws AplicacaoExternaException;
 	public long incluir (UsuarioAplicacao usuarioAplicacao) throws AplicacaoExternaException;
 	public void atualizar (UsuarioAplicacao usuarioAplicacao) throws AplicacaoExternaException;
-	public Long consultarUsuarioAplicacao(UsuarioAplicacao usuarioAplicacao) throws AplicacaoExternaException;
+	public void consultarUsuarioAplicacao(UsuarioAplicacao usuarioAplicacao) throws AplicacaoExternaException;
+	public void consultarPorId(UsuarioAplicacao usuarioAplicacao) throws AplicacaoExternaException;
 }

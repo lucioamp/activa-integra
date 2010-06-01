@@ -9,7 +9,7 @@ import util.Constantes;
 import dao.integra.UsuarioAplicacaoDAO;
 
 public class UsuarioAplicacao {
-	private long idUsuarioAplicacao;
+	private Long idUsuarioAplicacao;
 
 	private long pkUsuario;
 	private long idAplicacao;
@@ -23,19 +23,35 @@ public class UsuarioAplicacao {
 	private Integer atualizacaoAutomatica;
 	private Integer tempoValor;
 	
+	private String mensagem;
+	
 	private static UsuarioAplicacaoI dao;
+
+	/**
+	 * @return the mensagem
+	 */
+	public String getMensagem() {
+		return mensagem;
+	}
+
+	/**
+	 * @param mensagem the mensagem to set
+	 */
+	public void setMensagem(String mensagem) {
+		this.mensagem = mensagem;
+	}
 
 	/**
 	 * @return the idUsuarioAplicacao
 	 */
-	public long getIdUsuarioAplicacao() {
+	public Long getIdUsuarioAplicacao() {
 		return idUsuarioAplicacao;
 	}
 
 	/**
 	 * @param idUsuarioAplicacao the idUsuarioAplicacao to set
 	 */
-	public void setIdUsuarioAplicacao(long idUsuarioAplicacao) {
+	public void setIdUsuarioAplicacao(Long idUsuarioAplicacao) {
 		this.idUsuarioAplicacao = idUsuarioAplicacao;
 	}
 
@@ -195,7 +211,11 @@ public class UsuarioAplicacao {
 		getDAO().atualizar(this);
 	}
 	
-	public Long consultarUsuarioAplicacao(UsuarioAplicacao usuarioAplicacao) throws AplicacaoExternaException {
-		return getDAO().consultarUsuarioAplicacao(usuarioAplicacao);
+	public void consultarUsuarioAplicacao(UsuarioAplicacao usuarioAplicacao) throws AplicacaoExternaException {
+		getDAO().consultarUsuarioAplicacao(usuarioAplicacao);
+	}
+	
+	public void consultarPorId(UsuarioAplicacao usuarioAplicacao) throws AplicacaoExternaException {
+		getDAO().consultarPorId(usuarioAplicacao);
 	}
 }

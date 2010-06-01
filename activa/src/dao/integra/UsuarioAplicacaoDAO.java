@@ -5,6 +5,7 @@ import interfaces.integra.UsuarioAplicacaoI;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,7 +23,7 @@ public class UsuarioAplicacaoDAO implements UsuarioAplicacaoI {
 		Collection<UsuarioAplicacao> col = new ArrayList<UsuarioAplicacao>();
 		try{
 			conn = ConnectionFactory.getInstance().getConnection();
-			String sql = "select a.id_aplicacao, a.nome, r.id_recurso, r.nome";
+			String sql = "select u.id_usuario_aplicacao, a.id_aplicacao, a.nome, r.id_recurso, r.nome";
 			sql += " from ae_usuario_aplicacao u, ae_aplicacao a, ae_recurso r";
 			sql += " where u.id_aplicacao = a.id_aplicacao and u.id_recurso = r.id_recurso";
 			sql += " and pk_usuario = ?";
@@ -37,10 +38,11 @@ public class UsuarioAplicacaoDAO implements UsuarioAplicacaoI {
 			
 			while (rs.next()){
 				UsuarioAplicacao obj = new UsuarioAplicacao();
-				obj.setIdAplicacao(rs.getLong(1));
-				obj.setNomeAplicacao(rs.getString(2));
-				obj.setIdRecurso(rs.getLong(3));
-				obj.setNomeRecurso(rs.getString(4));
+				obj.setIdUsuarioAplicacao(rs.getLong(1));
+				obj.setIdAplicacao(rs.getLong(2));
+				obj.setNomeAplicacao(rs.getString(3));
+				obj.setIdRecurso(rs.getLong(4));
+				obj.setNomeRecurso(rs.getString(5));
 				
 				col.add(obj);
 			}
@@ -57,11 +59,11 @@ public class UsuarioAplicacaoDAO implements UsuarioAplicacaoI {
 		int r = 0;
 			try{
 				conn = ConnectionFactory.getInstance().getConnection();
-				String sql ="delete from ae_usuario_aplicacao where pk_usuario = ? and id_aplicacao = ? and id_recurso = ?";
+				String sql ="delete from ae_usuario_aplicacao where id_usuario_aplicacao = ?";
 				stmt = conn.prepareStatement(sql);
-				stmt.setLong(1, usuarioAplicacao.getPkUsuario());
-				stmt.setLong(2, usuarioAplicacao.getIdAplicacao());
-				stmt.setLong(3, usuarioAplicacao.getIdRecurso());
+				
+				stmt.setLong(1, usuarioAplicacao.getIdUsuarioAplicacao());
+
 				r = stmt.executeUpdate();
 			
 			}catch (Exception e) {
@@ -177,11 +179,10 @@ public class UsuarioAplicacaoDAO implements UsuarioAplicacaoI {
 		}
 	}
 	
-	public Long consultarUsuarioAplicacao(UsuarioAplicacao usuarioAplicacao) throws AplicacaoExternaException{
-		Long retValue = null;
+	public void consultarUsuarioAplicacao(UsuarioAplicacao usuarioAplicacao) throws AplicacaoExternaException{
 		try{
 			conn = ConnectionFactory.getInstance().getConnection();
-			String sql = "select id_usuario_aplicacao";
+			String sql = "select *";
 			sql += " from ae_usuario_aplicacao";
 			sql += " where pk_usuario = ? and id_aplicacao = ? and id_recurso = ?";
 		
@@ -194,14 +195,48 @@ public class UsuarioAplicacaoDAO implements UsuarioAplicacaoI {
 			rs = stmt.executeQuery();
 			
 			while (rs.next()){
-				retValue = rs.getLong(1);
+				carregar(rs, usuarioAplicacao);
 			}
 		}catch (Exception e) {
 			throw new AplicacaoExternaException(e);
 		}finally{
 			ConnectionFactory.getInstance().closeConnection(rs, stmt, conn);
 		}
+	}
+	
+	public void consultarPorId(UsuarioAplicacao usuarioAplicacao) throws AplicacaoExternaException{
+		try{
+			conn = ConnectionFactory.getInstance().getConnection();
+			String sql = "select *";
+			sql += " from ae_usuario_aplicacao";
+			sql += " where id_usuario_aplicacao = ?";
 		
-		return retValue;
+			stmt = conn.prepareStatement(sql);
+			
+			stmt.setLong(1, usuarioAplicacao.getIdUsuarioAplicacao());
+			
+			rs = stmt.executeQuery();
+			
+			while (rs.next()){
+				carregar(rs, usuarioAplicacao);
+			}
+		}catch (Exception e) {
+			throw new AplicacaoExternaException(e);
+		}finally{
+			ConnectionFactory.getInstance().closeConnection(rs, stmt, conn);
+		}
+	}
+	
+	private void carregar(ResultSet rs, UsuarioAplicacao usuarioAplicacao) throws SQLException {
+		usuarioAplicacao.setIdUsuarioAplicacao(rs.getLong("id_usuario_aplicacao"));
+		usuarioAplicacao.setPkUsuario(rs.getLong("pk_usuario"));
+		usuarioAplicacao.setIdAplicacao(rs.getLong("id_aplicacao"));
+		usuarioAplicacao.setIdRecurso(rs.getLong("id_recurso"));
+		usuarioAplicacao.setPermissao(rs.getInt("permissao"));
+		usuarioAplicacao.setMostrarJanela(rs.getString("mostrar_janela"));
+		if (rs.getInt("atualizacao_automatica") > 0) {
+			usuarioAplicacao.setAtualizacaoAutomatica(rs.getInt("atualizacao_automatica"));
+			usuarioAplicacao.setTempoValor(rs.getInt("tempo_valor"));
+		}
 	}
 }

@@ -89,15 +89,10 @@ public class MembroAplicacaoServlet extends HttpServlet {
 		
 			case 'E': //Exclusão
 			{
-				long idAplicacao = Long.parseLong(request.getParameter("idAplicacao"));
-				long idRecurso = Long.parseLong(request.getParameter("idRecurso"));
-				
-				UsuarioAplicacao usuarioAplicacao = new UsuarioAplicacao();
-				usuarioAplicacao.setPkUsuario(usuario.getPkUsuario());
-				usuarioAplicacao.setIdAplicacao(idAplicacao);
-				usuarioAplicacao.setIdRecurso(idRecurso);
-
 				try {
+					UsuarioAplicacao usuarioAplicacao = new UsuarioAplicacao();
+					usuarioAplicacao.setIdUsuarioAplicacao(Long.parseLong((String) request.getParameter("idUsuarioAplicacao")));
+					
 					usuarioAplicacao.excluir();
 				} catch (Exception e) {
 					request.setAttribute("erro", "Não é possivel excluir.");
@@ -137,6 +132,39 @@ public class MembroAplicacaoServlet extends HttpServlet {
 					
 					// Busca lista de parâmetros
 					Parametro.consultarPorRecurso(recurso);
+					
+				} catch (Exception e) {
+					request.setAttribute("erro", "Não foi possível buscar os dados da aplicação.");
+				}
+				
+				request.getRequestDispatcher("pages/restrito/servicos/aplicacoesExternas/incluir.jsp").forward(request, response);
+				
+				break;
+			}
+			case 'D': //Alteração/Detalhes
+			{
+				try {
+					UsuarioAplicacao usuarioAplicacao = new UsuarioAplicacao();
+					usuarioAplicacao.setIdUsuarioAplicacao(Long.parseLong((String) request.getParameter("idUsuarioAplicacao")));
+					usuarioAplicacao.consultarPorId(usuarioAplicacao);
+					request.setAttribute("usuarioAplicacao", usuarioAplicacao);
+					
+					AplicacaoExterna aplicacao = new AplicacaoExterna();
+					aplicacao.setIdAplicacao(usuarioAplicacao.getIdAplicacao());
+					aplicacao.consultar();
+					request.setAttribute("aplicacao", aplicacao);
+					
+					Recurso recurso = new Recurso();
+					recurso.setIdRecurso(usuarioAplicacao.getIdRecurso());
+					recurso.consultar(recurso);
+					request.setAttribute("recurso", recurso);
+					
+					// Busca lista de parâmetros
+					Parametro.consultarPorRecurso(recurso);
+					
+					// Pega os valores dos parâmetros
+					// TODO
+					
 				} catch (Exception e) {
 					request.setAttribute("erro", "Não foi possível buscar os dados da aplicação.");
 				}
@@ -147,6 +175,7 @@ public class MembroAplicacaoServlet extends HttpServlet {
 			}
 			case 'A': //Salvar inclusão/alteração dos dados
 			{
+				String idUsuarioAplicacao = request.getParameter("idUsuarioAplicacao");
 				Long idAplicacao = Long.valueOf(request.getParameter("idAplicacao"));
 				Long idRecurso = Long.valueOf(request.getParameter("idRecurso"));
 				String[] arrUsar = request.getParameter("arrUsar").split(",");
@@ -169,31 +198,30 @@ public class MembroAplicacaoServlet extends HttpServlet {
 					try {
 						usuarioAplicacao.setTempoValor(Integer.valueOf(tempoValor));
 					} catch(NumberFormatException ex) {
-						request.setAttribute("msg", "Campo Tempo é inválido.");
+						usuarioAplicacao.setMensagem("Campo Tempo é inválido.");
+						
+						request.setAttribute("jsonObject", usuarioAplicacao);
 						request.getRequestDispatcher("pages/empty.jsp").forward(request, response);
 						break;
 					}
 				}
 				
 				try {
-					Long idUsuarioAplicacao = usuarioAplicacao.consultarUsuarioAplicacao(usuarioAplicacao);
-					
-					if (idUsuarioAplicacao == null) {
-						idUsuarioAplicacao = usuarioAplicacao.incluir();
+					if (idUsuarioAplicacao == null || idUsuarioAplicacao == "") {
+						usuarioAplicacao.setIdUsuarioAplicacao(usuarioAplicacao.incluir());
 					} else {
-						usuarioAplicacao.setIdUsuarioAplicacao(idUsuarioAplicacao);
-	
+						usuarioAplicacao.setIdUsuarioAplicacao(Long.valueOf(idUsuarioAplicacao));
 						usuarioAplicacao.atualizar();
 					}
 					
 					// Atualiza com os parâmetros selecionados
-					UsuarioAplicacaoParametro.excluir(idUsuarioAplicacao);
+					UsuarioAplicacaoParametro.excluir(usuarioAplicacao.getIdUsuarioAplicacao());
 					
 					for (int i = 0; i < arrUsar.length; i++) {
 						Long idParametro = Long.valueOf(arrUsar[i]);
 						
 						UsuarioAplicacaoParametro parametro = new UsuarioAplicacaoParametro();
-						parametro.setIdUsuarioAplicacao(idUsuarioAplicacao);
+						parametro.setIdUsuarioAplicacao(usuarioAplicacao.getIdUsuarioAplicacao());
 						parametro.setIdParametro(idParametro);
 						
 						String valorPadrao = "";
@@ -208,12 +236,13 @@ public class MembroAplicacaoServlet extends HttpServlet {
 						parametro.incluir();
 					}
 					
-					request.setAttribute("msg", "Edição do Mashup realizada com sucesso.");
+					usuarioAplicacao.setMensagem("Edição do Mashup realizada com sucesso.");
 					
 				} catch (Exception e) {
-					request.setAttribute("msg", "Não foi possível atualizar os dados.");
+					usuarioAplicacao.setMensagem("Não foi possível atualizar os dados.");
 				}
 				
+				request.setAttribute("jsonObject", usuarioAplicacao);
 				request.getRequestDispatcher("pages/empty.jsp").forward(request, response);
 				
 				break;
