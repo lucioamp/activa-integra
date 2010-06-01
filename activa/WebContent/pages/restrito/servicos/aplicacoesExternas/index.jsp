@@ -10,7 +10,7 @@
 			var object = $this.getObject();
 			var servico = 'aplicacoesExternas';
 
-			adicionarAplicacao = function(idAplicacao, idRecurso, nome, recurso)
+			adicionarAplicacao = function(idUsuarioAplicacao, idAplicacao, idRecurso, nome, recurso)
 			{
 				var tr = $('<tr></tr>');
 				tr.contextMenu({
@@ -18,7 +18,7 @@
 						Editar: {
 							icon: "edit",
 							onClick: function() {
-								$this.newPage('../../MembroAplicacaoServlet?opcao=D', {idAplicacao: idAplicacao, idRecurso: idRecurso});
+								$this.newPage('../../MembroAplicacaoServlet?opcao=D', {idUsuarioAplicacao: idUsuarioAplicacao});
 							}
 						},
 						Remover: {
@@ -27,7 +27,7 @@
 								$this.alert('Tem certeza que deseja excluir?', null, {
 									dialog: DIALOG_CONFIRM,
 									clickOK: function() {
-										$this.getPage(1).empty().load("../../MembroAplicacaoServlet?opcao=E", {idAplicacao: idAplicacao, idRecurso: idRecurso}, function() {
+										$this.getPage(1).empty().load("../../MembroAplicacaoServlet?opcao=E", {idUsuarioAplicacao: idUsuarioAplicacao}, function() {
 											modulo_ready($this);
 										});
 									}
@@ -59,7 +59,7 @@
 			Collection<UsuarioAplicacao> recursoLista = (Collection<UsuarioAplicacao>)request.getAttribute("recursoLista");
 			if (recursoLista != null) {
 				for (UsuarioAplicacao recurso:recursoLista) {
-					out.print("adicionarAplicacao("+recurso.getIdAplicacao()+", "+recurso.getIdRecurso()+", '"+recurso.getNomeAplicacao()+"'.clearNull(), '"+recurso.getNomeRecurso()+"'.clearNull());");
+					out.print("adicionarAplicacao("+recurso.getIdUsuarioAplicacao()+", "+recurso.getIdAplicacao()+", "+recurso.getIdRecurso()+", '"+recurso.getNomeAplicacao()+"'.clearNull(), '"+recurso.getNomeRecurso()+"'.clearNull());");
 				}
 			}
 			%>
