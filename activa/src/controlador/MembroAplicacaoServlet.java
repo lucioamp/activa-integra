@@ -2,6 +2,7 @@ package controlador;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -144,6 +145,7 @@ public class MembroAplicacaoServlet extends HttpServlet {
 			case 'D': //Alteração/Detalhes
 			{
 				try {
+					// Dados da configuração
 					UsuarioAplicacao usuarioAplicacao = new UsuarioAplicacao();
 					usuarioAplicacao.setIdUsuarioAplicacao(Long.parseLong((String) request.getParameter("idUsuarioAplicacao")));
 					usuarioAplicacao.consultarPorId(usuarioAplicacao);
@@ -162,9 +164,22 @@ public class MembroAplicacaoServlet extends HttpServlet {
 					// Busca lista de parâmetros
 					Parametro.consultarPorRecurso(recurso);
 					
-					// Pega os valores dos parâmetros
-					// TODO
-					
+					if (recurso.getParametros().size() > 0) {
+						// Pega os valores dos parâmetros
+						Collection<UsuarioAplicacaoParametro> parametroLista = UsuarioAplicacaoParametro
+							.consultarPorUsuarioAplicacao(usuarioAplicacao.getIdUsuarioAplicacao());
+						
+						for (Parametro parametro : recurso.getParametros()) {
+							for (UsuarioAplicacaoParametro usuarioParametro : parametroLista) {
+								if (parametro.getIdParametro() == usuarioParametro.getIdParametro()) {
+									parametro.setUsarParametro(true);
+									parametro.setValorPadrao(usuarioParametro.getValorPadrao());
+									parametro.setBloquearValor(usuarioParametro.isBloquearValor());
+									break;
+								}
+							}
+						}
+					}
 				} catch (Exception e) {
 					request.setAttribute("erro", "Não foi possível buscar os dados da aplicação.");
 				}

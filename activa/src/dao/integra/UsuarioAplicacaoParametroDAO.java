@@ -5,6 +5,9 @@ import interfaces.integra.UsuarioAplicacaoParametroI;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import modelo.integra.UsuarioAplicacaoParametro;
 import util.AplicacaoExternaException;
@@ -53,6 +56,41 @@ public class UsuarioAplicacaoParametroDAO implements UsuarioAplicacaoParametroI 
 		}finally{
 			ConnectionFactory.getInstance().closeConnection(rs, stmt, conn);
 		}
+	}
+	
+	public Collection<UsuarioAplicacaoParametro> consultarPorUsuarioAplicacao(long idUsuarioAplicacao) throws AplicacaoExternaException{
+		Collection<UsuarioAplicacaoParametro> col = new ArrayList<UsuarioAplicacaoParametro>();
+		
+		try{
+			conn = ConnectionFactory.getInstance().getConnection();
+			String sql = "select *";
+			sql += " from ae_usuario_aplicacao_parametro";
+			sql += " where id_usuario_aplicacao = ?";
+		
+			stmt = conn.prepareStatement(sql);
+			
+			stmt.setLong(1, idUsuarioAplicacao);
+			
+			rs = stmt.executeQuery();
+			
+			while (rs.next()){
+				UsuarioAplicacaoParametro obj = new UsuarioAplicacaoParametro();
+				carregar(rs, obj);
+				col.add(obj);
+			}
+		}catch (Exception e) {
+			throw new AplicacaoExternaException(e);
+		}finally{
+			ConnectionFactory.getInstance().closeConnection(rs, stmt, conn);
+		}
+		
+		return col;
+	}
+
+	private void carregar(ResultSet rs, UsuarioAplicacaoParametro parametro) throws SQLException {
+		parametro.setIdParametro(rs.getLong("id_parametro"));
+		parametro.setValorPadrao(rs.getString("valor_padrao"));
+		parametro.setBloquearValor(rs.getInt("bloquear_valor") == 1 ? true : false);
 	}
 	
 }

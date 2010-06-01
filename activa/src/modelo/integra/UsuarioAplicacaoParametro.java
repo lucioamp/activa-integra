@@ -1,5 +1,7 @@
 package modelo.integra;
 
+import java.util.Collection;
+
 import interfaces.integra.UsuarioAplicacaoParametroI;
 import util.AplicacaoExternaException;
 import util.Constantes;
@@ -90,6 +92,10 @@ public class UsuarioAplicacaoParametro {
 	
 	public void incluir() throws AplicacaoExternaException{
 		getDAO().incluir(this);
+	}
+	
+	public static Collection<UsuarioAplicacaoParametro> consultarPorUsuarioAplicacao(long idUsuarioAplicacao) throws AplicacaoExternaException {
+		return getDAO().consultarPorUsuarioAplicacao(idUsuarioAplicacao);
 	}
 	
 }

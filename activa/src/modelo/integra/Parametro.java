@@ -17,6 +17,53 @@ public class Parametro extends NivelWADL
 	private int idRecurso;
 	private int idMetodo;
 	
+	// Campos para a edição de mashups
+	private boolean usarParametro;
+	private String valorPadrao;
+	private boolean bloquearValor;
+	
+	/**
+	 * @return the usarParametro
+	 */
+	public boolean isUsarParametro() {
+		return usarParametro;
+	}
+
+	/**
+	 * @param usarParametro the usarParametro to set
+	 */
+	public void setUsarParametro(boolean usarParametro) {
+		this.usarParametro = usarParametro;
+	}
+
+	/**
+	 * @return the valorPadrao
+	 */
+	public String getValorPadrao() {
+		return valorPadrao;
+	}
+
+	/**
+	 * @param valorPadrao the valorPadrao to set
+	 */
+	public void setValorPadrao(String valorPadrao) {
+		this.valorPadrao = valorPadrao;
+	}
+
+	/**
+	 * @return the bloquearValor
+	 */
+	public boolean isBloquearValor() {
+		return bloquearValor;
+	}
+
+	/**
+	 * @param bloquearValor the bloquearValor to set
+	 */
+	public void setBloquearValor(boolean bloquearValor) {
+		this.bloquearValor = bloquearValor;
+	}
+
 	private String title;
 	
 	private static ParametroI dao;
