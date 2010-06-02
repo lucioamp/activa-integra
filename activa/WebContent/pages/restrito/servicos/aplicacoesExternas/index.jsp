@@ -38,7 +38,7 @@
 				});
 
 				var linkExecutar = $('<a></a>').attr('href', '#').append('Executar').click(function(e) {
-					$this.newPage('../../MembroAplicacaoServlet?opcao=X', {idAplicacao: idAplicacao, idRecurso: idRecurso});
+					$this.newPage('../../MembroAplicacaoServlet?opcao=L', {idUsuarioAplicacao: idUsuarioAplicacao});
 				});
 				
 				$this.find('table tbody')

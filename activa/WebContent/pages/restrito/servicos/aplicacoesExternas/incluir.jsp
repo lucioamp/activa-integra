@@ -72,8 +72,6 @@
 			if(request.getAttribute("erro") != null)
 				out.print("$this.alert('"+request.getAttribute("erro")+"');");
 		
-			out.print("");
-			
 			// AplicacaoExterna
 			AplicacaoExterna aplicacao = (AplicacaoExterna)request.getAttribute("aplicacao");
 			out.print("$this.find('#idAplicacao').val('" + aplicacao.getIdAplicacao() + "');");
