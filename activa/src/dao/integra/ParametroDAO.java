@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import modelo.integra.Parametro;
@@ -77,5 +78,36 @@ public class ParametroDAO implements ParametroI {
 		parametro.setName(rs.getString("nome"));
 		parametro.setTitle(rs.getString("titulo"));
 		parametro.setRequired(rs.getInt("obrigatorio") == 1 ? true : false);
+	}
+	
+	public Collection<Parametro> consultarPorUsuarioAplicacao(long idUsuarioAplicacao) throws AplicacaoExternaException{
+		Collection<Parametro> col = new ArrayList<Parametro>();
+		
+		try{
+			conn = ConnectionFactory.getInstance().getConnection();
+			String sql = "select p.*, u.valor_padrao, u.bloquear_valor";
+			sql += " from ae_parametro p, ae_usuario_aplicacao_parametro u";
+			sql += " where p.id_parametro = u.id_parametro and id_usuario_aplicacao = ?";
+		
+			stmt = conn.prepareStatement(sql);
+			
+			stmt.setLong(1, idUsuarioAplicacao);
+			
+			rs = stmt.executeQuery();
+			
+			while (rs.next()){
+				Parametro obj = new Parametro();
+				carregar(rs, obj);
+				obj.setValorPadrao(rs.getString("valor_padrao"));
+				obj.setBloquearValor(rs.getInt("bloquear_valor") == 1 ? true : false);
+				col.add(obj);
+			}
+		}catch (Exception e) {
+			throw new AplicacaoExternaException(e);
+		}finally{
+			ConnectionFactory.getInstance().closeConnection(rs, stmt, conn);
+		}
+		
+		return col;
 	}
 }

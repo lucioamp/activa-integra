@@ -73,6 +73,7 @@ public class RecursoDAO implements RecursoI {
 		recurso.setNome(rs.getString("nome"));
 		recurso.setBase(rs.getString("base"));
 		recurso.setPath(rs.getString("path"));
+		recurso.setMetodo(rs.getString("metodo"));
 	}
 
 	public int incluir (Recurso recurso) throws AplicacaoExternaException{

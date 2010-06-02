@@ -18,6 +18,12 @@ import modelo.integra.Recurso;
 import modelo.integra.UsuarioAplicacao;
 import modelo.integra.UsuarioAplicacaoParametro;
 
+import org.json.JSONException;
+import org.json.JSONML;
+import org.json.JSONObject;
+
+import util.integra.ExecutorAplicacao;
+
 /**
  * Servlet implementation class AplicacoesExternasServlet
  */
@@ -262,9 +268,66 @@ public class MembroAplicacaoServlet extends HttpServlet {
 				
 				break;
 			}
+			case 'L': //Chamar tela para executar aplicação
+			{
+				try {
+					// Dados da configuração
+					UsuarioAplicacao usuarioAplicacao = new UsuarioAplicacao();
+					usuarioAplicacao.setIdUsuarioAplicacao(Long.parseLong((String) request.getParameter("idUsuarioAplicacao")));
+					usuarioAplicacao.consultarPorId(usuarioAplicacao);
+					
+					AplicacaoExterna aplicacao = new AplicacaoExterna();
+					aplicacao.setIdAplicacao(usuarioAplicacao.getIdAplicacao());
+					aplicacao.consultar();
+					request.setAttribute("aplicacao", aplicacao);
+					
+					Recurso recurso = new Recurso();
+					recurso.setIdRecurso(usuarioAplicacao.getIdRecurso());
+					recurso.consultar(recurso);
+					request.setAttribute("recurso", recurso);
+					
+					Collection<Parametro> parametroLista = Parametro.consultarPorUsuarioAplicacao(usuarioAplicacao.getIdUsuarioAplicacao());
+					request.setAttribute("parametroLista", parametroLista);
+					
+				} catch (Exception e) {
+					request.setAttribute("msg", "Não foi possível atualizar os dados.");
+				}
+				
+				request.getRequestDispatcher("pages/restrito/servicos/aplicacoesExternas/executar.jsp").forward(request, response);
+				
+				break;
+			}
+			
 			case 'X': //Executar aplicação
 			{
-				request.getRequestDispatcher("pages/restrito/servicos/aplicacoesExternas/executar.jsp").forward(request, response);
+				ExecutorAplicacao executor = new ExecutorAplicacao();
+				String resultado = executor.executaAplicação();
+				
+				if ("HTTP/1.1 401 Unauthorized".equals(resultado)) {
+					// Abrir janela de login
+					// TODO
+				}
+				else {
+					try {
+						// XML
+						if (resultado.startsWith("<?xml")) {
+							JSONObject obj = JSONML.toJSONObject(resultado);
+							resultado = executor.getJSONFormatado(obj);
+						}
+						// JSON
+						else if (resultado.startsWith("{")) {
+							JSONObject obj = new JSONObject(resultado);
+							resultado = executor.getJSONFormatado(obj);
+						}
+					} catch (JSONException e) {
+						// TODO
+					}
+				}
+				
+				// TODO - Melhorar visualização do JSON
+				
+				request.setAttribute("msg", resultado);
+				request.getRequestDispatcher("pages/empty.jsp").forward(request, response);
 				
 				break;
 			}
