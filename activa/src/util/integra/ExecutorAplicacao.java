@@ -2,6 +2,8 @@ package util.integra;
 
 import java.io.IOException;
 
+import modelo.integra.ExecutorAplicacaoRequest;
+
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
@@ -37,27 +39,35 @@ public class ExecutorAplicacao {
 		}
 	};
 
-	public String executaAplicação() {
-		String response = "";
+	public String[] executaAplicação(ExecutorAplicacaoRequest request) {
+		String[] response = new String[2];
 		
 		HttpClient client = new HttpClient();
 		
-		HttpMethod method = new GetMethod("http://search.twitter.com/search.atom?q=web");
+		client.getHostConfiguration().setProxy("proxy.houston.hp.com", 8080);
+		
+		//HttpMethod method = new GetMethod("http://search.twitter.com/search.atom?q=web");
+		HttpMethod method = new GetMethod("https://api.del.icio.us/v1/posts/all?results=10");
 		method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, myretryhandler);
 		
-		Credentials credentials = new UsernamePasswordCredentials("lucioamp", "73210077");
-		client.getState().setCredentials(AuthScope.ANY, credentials);
+		if (request.getUsuario() != null && request.getSenha() != null) {
+			Credentials credentials = new UsernamePasswordCredentials(
+					request.getUsuario(), request.getSenha());
+			client.getState().setCredentials(AuthScope.ANY, credentials);
+		}
 
 		try {
 			int status = client.executeMethod(method);
 			
+			response[0] = String.valueOf(status);
+			
 			// Status OK
 			if (status == HttpStatus.SC_OK) {
-				response = method.getResponseBodyAsString();
+				response[1] = method.getResponseBodyAsString();
 				System.out.println(response);
 			}
 			else {
-				response = "<span style='color:red;'>" + method.getStatusLine().toString() + "</span>";
+				response[1] = "<span style='color:red;'>" + method.getStatusLine().toString() + "</span>";
 			}
 
 			// Libera a conexão
@@ -66,7 +76,7 @@ public class ExecutorAplicacao {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
-			response = "<span style='color:red;'>" + e.toString() + "</span>";
+			response[1] = "<span style='color:red;'>" + e.toString() + "</span>";
 		}
 		
 		return response;

@@ -1,6 +1,7 @@
 package controlador;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -13,11 +14,13 @@ import javax.servlet.http.HttpSession;
 
 import modelo.Usuario;
 import modelo.integra.AplicacaoExterna;
+import modelo.integra.ExecutorAplicacaoRequest;
 import modelo.integra.Parametro;
 import modelo.integra.Recurso;
 import modelo.integra.UsuarioAplicacao;
 import modelo.integra.UsuarioAplicacaoParametro;
 
+import org.apache.http.HttpStatus;
 import org.json.JSONException;
 import org.json.JSONML;
 import org.json.JSONObject;
@@ -289,6 +292,8 @@ public class MembroAplicacaoServlet extends HttpServlet {
 					Collection<Parametro> parametroLista = Parametro.consultarPorUsuarioAplicacao(usuarioAplicacao.getIdUsuarioAplicacao());
 					request.setAttribute("parametroLista", parametroLista);
 					
+					session.setAttribute("idUsuarioAplicacao", usuarioAplicacao.getIdUsuarioAplicacao());
+					
 				} catch (Exception e) {
 					request.setAttribute("msg", "Não foi possível atualizar os dados.");
 				}
@@ -300,38 +305,111 @@ public class MembroAplicacaoServlet extends HttpServlet {
 			
 			case 'X': //Executar aplicação
 			{
-				ExecutorAplicacao executor = new ExecutorAplicacao();
-				String resultado = executor.executaAplicação();
+				Long idUsuarioAplicacao = (Long) session.getAttribute("idUsuarioAplicacao");
 				
-				if ("HTTP/1.1 401 Unauthorized".equals(resultado)) {
-					// Abrir janela de login
-					// TODO
+				// Salva os dados para todas as aplicações executadas
+				List<ExecutorAplicacaoRequest> aplicacaoRequestLista = getAplicacaoRequestLista(session);
+				
+				int indiceAplicacao = getIndiceAplicacao(aplicacaoRequestLista, idUsuarioAplicacao);
+				
+				System.out.println(indiceAplicacao);
+				
+				ExecutorAplicacaoRequest aplicacaoRequest = null;
+				if (indiceAplicacao >= 0) {
+					aplicacaoRequest = aplicacaoRequestLista.get(indiceAplicacao);
 				}
 				else {
+					aplicacaoRequest = new ExecutorAplicacaoRequest();
+					aplicacaoRequest.setIdUsuarioAplicacao(idUsuarioAplicacao);
+					
+					// TODO
+					aplicacaoRequest.setUrl(null);
+				}
+				
+				String usuarioParam = request.getParameter("usuario");
+				String senhaParam = request.getParameter("senha");
+				
+				System.out.println(usuarioParam);
+				System.out.println(senhaParam);
+				
+			if (usuarioParam != null && !usuarioParam.equals("undefined")
+					&& senhaParam != null && !senhaParam.equals("undefined")) {
+					aplicacaoRequest.setUsuario(usuarioParam);
+					aplicacaoRequest.setSenha(senhaParam);
+				}
+				
+				// TODO - Pegar da tela
+				aplicacaoRequest.setParametros(null);
+				
+				ExecutorAplicacao executor = new ExecutorAplicacao();
+				String[] resultado = executor.executaAplicação(aplicacaoRequest);
+				
+				if (Integer.parseInt(resultado[0]) == HttpStatus.SC_UNAUTHORIZED) {
+					// Abrir janela de login
+					request.setAttribute("msg", "login");
+				}
+				else {
+					String retorno = "";
 					try {
+						// ATOM - Ver se tem como melhorar visualização com biblioteca tipo RSS
+						
 						// XML
-						if (resultado.startsWith("<?xml")) {
-							JSONObject obj = JSONML.toJSONObject(resultado);
-							resultado = executor.getJSONFormatado(obj);
+						if (resultado[1].startsWith("<?xml")) {
+							JSONObject obj = JSONML.toJSONObject(resultado[1]);
+							retorno = executor.getJSONFormatado(obj);
 						}
 						// JSON
-						else if (resultado.startsWith("{")) {
-							JSONObject obj = new JSONObject(resultado);
-							resultado = executor.getJSONFormatado(obj);
+						else if (resultado[1].startsWith("{")) {
+							JSONObject obj = new JSONObject(resultado[1]);
+							retorno = executor.getJSONFormatado(obj);
 						}
 					} catch (JSONException e) {
 						// TODO
+					} finally {
+						request.setAttribute("msg", retorno);
 					}
 				}
 				
-				// TODO - Melhorar visualização do JSON
+				// Atualiza na lista da sessão
+				aplicacaoRequestLista.remove(aplicacaoRequest);
+				aplicacaoRequestLista.add(aplicacaoRequest);
+				session.setAttribute("aplicacaoRequestLista", aplicacaoRequestLista);
 				
-				request.setAttribute("msg", resultado);
+				// TODO - Melhorar visualização do JSON ou mudar para XML
+				
 				request.getRequestDispatcher("pages/empty.jsp").forward(request, response);
 				
 				break;
 			}
 		}
 	}
-    
+
+	@SuppressWarnings("unchecked")
+	private List<ExecutorAplicacaoRequest> getAplicacaoRequestLista(
+			HttpSession session) {
+		List<ExecutorAplicacaoRequest> aplicacaoRequestLista = (List<ExecutorAplicacaoRequest>) session
+				.getAttribute("aplicacaoRequestLista");
+		
+		if (aplicacaoRequestLista == null) {
+			aplicacaoRequestLista = new ArrayList<ExecutorAplicacaoRequest>();
+		}
+		
+		return aplicacaoRequestLista;
+	}
+	
+	private int getIndiceAplicacao(List<ExecutorAplicacaoRequest> aplicacaoRequestLista, Long idUsuarioAplicacao) {
+		int retValue = -1;
+		
+		for (int i = 0; i < aplicacaoRequestLista.size(); i++) {
+			ExecutorAplicacaoRequest aplicacaoRequest = aplicacaoRequestLista.get(i);
+			
+			if (aplicacaoRequest.getIdUsuarioAplicacao().equals(idUsuarioAplicacao)) {
+				retValue = i;
+				break;
+			}
+		}
+		
+		return retValue;
+	}
+
 }

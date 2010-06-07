@@ -7,22 +7,18 @@
 <%@page import="modelo.integra.Recurso"%>
 <%@page import="modelo.integra.Parametro"%>
 <script type="text/javascript">
+	var thisObj;
+	var object;
+
 	$(function() {
 		modulo_ready = function($this, $oldPage, $mainPage) {
-			var object = $mainPage.getObject();
+			thisObj = $this;
+			object = $mainPage.getObject();
 
 			var botaoVoltar = $this.find('button#voltar').click(function() { $this.remove(); $oldPage.fadeIn(600); });
 
 			$this.find('button#executar').click(function() {
-				var div = $this.find('#divResultado');
-				div.html('');
-				
-				$this.sendRequest('../../MembroAplicacaoServlet?opcao=X',
-					{}, 
-					function(data) {
-						div.html(data);
-					}
-				);
+				executaAplicacao();
 			});
 
 			<%
@@ -67,9 +63,62 @@
 				out.print(");");
 			}
 			%>
-			
 		};
 	});
+
+	var executaAplicacao = function(usuario, senha) 
+	{
+		var div = thisObj.find('#divResultado');
+		div.html('');
+		
+		thisObj.sendRequest('../../MembroAplicacaoServlet?opcao=X',
+			{usuario: usuario, senha: senha}, 
+			function(data) {
+				if (data.trim() == 'login') {
+					basicLogin.showDialog();
+				}
+				else {
+					div.html(data);
+				}
+			}
+		);
+	};
+
+	var executaAposLogin = function(usuario, senha) 
+	{
+		object.focus();
+
+		executaAplicacao(usuario, senha);
+	};
+	
+	var basicLogin = function()
+	{
+		return {
+			showDialog:function()
+			{
+				request.html($('body'), null, 'servicos/aplicacoesExternas/authBasica.jsp', false, function() {
+					var login = $('#login');
+					login.showDialog({
+						minimize: false,
+						maximize: false,
+						modal: true,
+						showCloseButton: true,
+						show: 'fold',
+						title: 'Autenticação na Aplicação',
+						width: '290',
+						position: 'center',
+						resizable: false,
+						draggable: false,
+						reload: false
+					});				
+				});
+				
+				return this;
+			}
+		}
+	}();
+
+	
 </script>	
 <div id="title">Aplicações Externas - Executar Aplicação</div>
 <input type="hidden" id="idAplicacao">
