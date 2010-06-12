@@ -44,7 +44,7 @@ public class ExecutorAplicacao {
 		
 		HttpClient client = new HttpClient();
 		
-		client.getHostConfiguration().setProxy("proxy.houston.hp.com", 8080);
+//		client.getHostConfiguration().setProxy("proxy.houston.hp.com", 8080);
 		
 		//HttpMethod method = new GetMethod("http://search.twitter.com/search.atom?q=web");
 		HttpMethod method = new GetMethod("https://api.del.icio.us/v1/posts/all?results=10");
