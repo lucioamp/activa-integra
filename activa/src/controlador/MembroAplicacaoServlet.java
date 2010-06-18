@@ -29,9 +29,11 @@ import modelo.integra.Recurso;
 import modelo.integra.UsuarioAplicacao;
 import modelo.integra.UsuarioAplicacaoParametro;
 
+import org.apache.commons.httpclient.NameValuePair;
 import org.apache.http.HttpStatus;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.XML;
 
 import util.integra.ExecutorAplicacao;
 
@@ -321,41 +323,79 @@ public class MembroAplicacaoServlet extends HttpServlet {
 
 		case 'X': // Executar aplicação
 		{
-			Long idUsuarioAplicacao = (Long) session.getAttribute("idUsuarioAplicacao");
-
+			ExecutorAplicacaoRequest aplicacaoRequest = null;
+			
 			// Salva os dados para todas as aplicações executadas
 			List<ExecutorAplicacaoRequest> aplicacaoRequestLista = getAplicacaoRequestLista(session);
-
-			int indiceAplicacao = getIndiceAplicacao(aplicacaoRequestLista, idUsuarioAplicacao);
-
-			System.out.println(indiceAplicacao);
-
-			ExecutorAplicacaoRequest aplicacaoRequest = null;
-			if (indiceAplicacao >= 0) {
-				aplicacaoRequest = aplicacaoRequestLista.get(indiceAplicacao);
-			} else {
-				aplicacaoRequest = new ExecutorAplicacaoRequest();
-				aplicacaoRequest.setIdUsuarioAplicacao(idUsuarioAplicacao);
-
-				// TODO
-				aplicacaoRequest.setUrl(null);
+			
+			try {
+				Long idUsuarioAplicacao = (Long) session.getAttribute("idUsuarioAplicacao");
+				
+				UsuarioAplicacao usuarioAplicacao = new UsuarioAplicacao();
+				usuarioAplicacao.setIdUsuarioAplicacao(idUsuarioAplicacao);
+				usuarioAplicacao.consultarPorId(usuarioAplicacao);
+				
+				int indiceAplicacao = getIndiceAplicacao(aplicacaoRequestLista, idUsuarioAplicacao);
+	
+				if (indiceAplicacao >= 0) {
+					aplicacaoRequest = aplicacaoRequestLista.get(indiceAplicacao);
+				} else {
+					aplicacaoRequest = new ExecutorAplicacaoRequest();
+					aplicacaoRequest.setIdUsuarioAplicacao(idUsuarioAplicacao);
+					
+					Recurso recurso = new Recurso();
+					recurso.setIdRecurso(usuarioAplicacao.getIdRecurso());
+					recurso.consultar(recurso);
+					
+					// TODO - Retirar
+					recurso.setBase("http://search.twitter.com");
+					recurso.setPath("search.atom");
+					//recurso.setBase("https://api.del.icio.us");
+					//recurso.setPath("v1/posts/all");
+					recurso.setMetodo("GET");
+					
+					String separador = "";
+					if (recurso.getBase().substring(recurso.getBase().length() - 1) != "/") {
+						separador = "/";
+					}
+	
+					aplicacaoRequest.setUrl(recurso.getBase() + separador + recurso.getPath());
+					aplicacaoRequest.setMetodo(recurso.getMetodo());
+				}
+	
+				String usuarioParam = request.getParameter("usuario");
+				String senhaParam = request.getParameter("senha");
+	
+				if (usuarioParam != null && !usuarioParam.equals("undefined") && senhaParam != null
+						&& !senhaParam.equals("undefined")) {
+					aplicacaoRequest.setUsuario(usuarioParam);
+					aplicacaoRequest.setSenha(senhaParam);
+				}
+				
+				// Pegar parâmetros
+				List<Parametro> parametroLista = Parametro.consultarPorUsuarioAplicacao(usuarioAplicacao
+						.getIdUsuarioAplicacao());
+				
+				String[] arrParamValor = request.getParameter("arrParamValor").split(",");
+				
+				// Adicionar parâmetros para executor
+				aplicacaoRequest.getParametros().clear();
+				for (int i = 0; i < parametroLista.size(); i++) {
+					aplicacaoRequest.getParametros().add(
+							new NameValuePair(parametroLista.get(i).getName(),
+									arrParamValor[i]));
+				}
+				
+				// TODO - Remover
+				// aplicacaoRequest.getParametros().add(new NameValuePair("results", "10"));
+				aplicacaoRequest.getParametros().add(new NameValuePair("q", "web"));
+	
+			} catch (Exception e) {
+				request.setAttribute("msg", "Não foi possível executar aplicação.");
+				request.getRequestDispatcher("pages/empty.jsp").forward(request, response);
+				break;
 			}
-
-			String usuarioParam = request.getParameter("usuario");
-			String senhaParam = request.getParameter("senha");
-
-			System.out.println(usuarioParam);
-			System.out.println(senhaParam);
-
-			if (usuarioParam != null && !usuarioParam.equals("undefined") && senhaParam != null
-					&& !senhaParam.equals("undefined")) {
-				aplicacaoRequest.setUsuario(usuarioParam);
-				aplicacaoRequest.setSenha(senhaParam);
-			}
-
-			// TODO - Pegar da tela
-			aplicacaoRequest.setParametros(null);
-
+			
 			ExecutorAplicacao executor = new ExecutorAplicacao();
 			String[] resultado = executor.executaAplicação(aplicacaoRequest);
 
@@ -366,27 +406,34 @@ public class MembroAplicacaoServlet extends HttpServlet {
 				String retorno = "";
 
 				try {
-					// JSON
+					// JSON - Converte para XML
 					if (resultado[1].startsWith("{")) {
 						JSONObject obj = new JSONObject(resultado[1]);
-						resultado[1] = obj.toString(2);
+						resultado[1] = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?><resultado>" + XML.toString(obj) + "</resultado>";
 					}
 
-					StringWriter xmlBuffer = new StringWriter();
-					xmlBuffer.write(resultado[1].replace("UTF-8", "iso-8859-1"));
+					if (resultado[1].startsWith("<?xml")) {
+						StringWriter xmlBuffer = new StringWriter();
+						xmlBuffer.write(resultado[1].replace("UTF-8", "iso-8859-1").replaceAll("\\n", ""));
 
-					ByteArrayInputStream xmlParseInputStream = new ByteArrayInputStream(xmlBuffer.toString().getBytes());
+						ByteArrayInputStream xmlParseInputStream = new ByteArrayInputStream(xmlBuffer.toString().getBytes());
 
-					TransformerFactory tFactory = TransformerFactory.newInstance();
-					InputStream xslInput = getClass().getResourceAsStream("/xmlOutput.xsl");
+						TransformerFactory tFactory = TransformerFactory.newInstance();
+						InputStream xslInput = getClass().getResourceAsStream("/xmlOutput.xsl");
 
-					Transformer transformer = tFactory.newTransformer(new StreamSource(xslInput));
+						Transformer transformer = tFactory.newTransformer(new StreamSource(xslInput));
 
-					ByteArrayOutputStream byte1 = new ByteArrayOutputStream();
+						ByteArrayOutputStream byte1 = new ByteArrayOutputStream();
 
-					transformer.transform(new StreamSource(xmlParseInputStream), new StreamResult(byte1));
+						transformer.transform(new StreamSource(xmlParseInputStream), new StreamResult(byte1));
 
-					retorno = byte1.toString();
+						retorno = byte1.toString();
+						
+						// TODO - Tentar converter para HTML
+					}
+					else {
+						retorno = resultado[1];
+					}
 
 					request.setAttribute("msg", retorno);
 

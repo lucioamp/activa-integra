@@ -7,7 +7,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import modelo.integra.Parametro;
@@ -80,8 +79,8 @@ public class ParametroDAO implements ParametroI {
 		parametro.setRequired(rs.getInt("obrigatorio") == 1 ? true : false);
 	}
 	
-	public Collection<Parametro> consultarPorUsuarioAplicacao(long idUsuarioAplicacao) throws AplicacaoExternaException{
-		Collection<Parametro> col = new ArrayList<Parametro>();
+	public List<Parametro> consultarPorUsuarioAplicacao(long idUsuarioAplicacao) throws AplicacaoExternaException{
+		List<Parametro> col = new ArrayList<Parametro>();
 		
 		try{
 			conn = ConnectionFactory.getInstance().getConnection();

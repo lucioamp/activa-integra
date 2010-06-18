@@ -1,8 +1,9 @@
 package modelo.integra;
 
-import java.util.Collection;
-
 import interfaces.integra.ParametroI;
+
+import java.util.List;
+
 import util.AplicacaoExternaException;
 import util.Constantes;
 import dao.integra.ParametroDAO;
@@ -183,7 +184,7 @@ public class Parametro extends NivelWADL
 		getDAO().consultarPorRecurso(recurso);
 	}
 	
-	public static Collection<Parametro> consultarPorUsuarioAplicacao(long idUsuarioAplicacao) throws AplicacaoExternaException {
+	public static List<Parametro> consultarPorUsuarioAplicacao(long idUsuarioAplicacao) throws AplicacaoExternaException {
 		return getDAO().consultarPorUsuarioAplicacao(idUsuarioAplicacao);
 	}
 }

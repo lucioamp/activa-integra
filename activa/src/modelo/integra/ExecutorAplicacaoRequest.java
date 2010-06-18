@@ -1,5 +1,10 @@
 package modelo.integra;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.httpclient.NameValuePair;
+
 public class ExecutorAplicacaoRequest {
 	private Long idUsuarioAplicacao;
 	
@@ -7,16 +12,8 @@ public class ExecutorAplicacaoRequest {
 	private String senha;
 
 	private String url;
-
-	private String parametros;
-
-	public String getParametros() {
-		return parametros;
-	}
-
-	public void setParametros(String parametros) {
-		this.parametros = parametros;
-	}
+	private List<NameValuePair> parametros = new ArrayList<NameValuePair>();
+	private String metodo;
 
 	public String getUsuario() {
 		return usuario;
@@ -76,6 +73,22 @@ public class ExecutorAplicacaoRequest {
 		} else if (!idUsuarioAplicacao.equals(other.idUsuarioAplicacao))
 			return false;
 		return true;
+	}
+
+	public String getMetodo() {
+		return metodo;
+	}
+
+	public void setMetodo(String metodo) {
+		this.metodo = metodo;
+	}
+
+	public List<NameValuePair> getParametros() {
+		return parametros;
+	}
+
+	public void setParametros(List<NameValuePair> parametros) {
+		this.parametros = parametros;
 	}
 
 }

@@ -70,9 +70,16 @@
 	{
 		var div = thisObj.find('#divResultado');
 		div.html('');
+
+		var paramValor = thisObj.find('#paramValor');
+
+		var arrParamValor = new Array();
+		for ( var i = 0; i < paramValor.length; i++) {
+			arrParamValor[i] = paramValor[i].value;
+		}
 		
 		thisObj.sendRequest('../../MembroAplicacaoServlet?opcao=X',
-			{usuario: usuario, senha: senha}, 
+			{usuario: usuario, senha: senha, arrParamValor: arrParamValor.join(",")}, 
 			function(data) {
 				if (data.trim() == 'login') {
 					basicLogin.showDialog();

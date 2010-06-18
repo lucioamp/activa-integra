@@ -9,10 +9,12 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpMethodRetryHandler;
+import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.NoHttpResponseException;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.http.HttpStatus;
 import org.json.JSONException;
@@ -44,34 +46,60 @@ public class ExecutorAplicacao {
 		
 		HttpClient client = new HttpClient();
 		
-//		client.getHostConfiguration().setProxy("proxy.houston.hp.com", 8080);
-		
-		//HttpMethod method = new GetMethod("http://search.twitter.com/search.atom?q=web");
-		HttpMethod method = new GetMethod("https://api.del.icio.us/v1/posts/all?results=10");
-		method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, myretryhandler);
-		
+		// Autenticação
 		if (request.getUsuario() != null && request.getSenha() != null) {
 			Credentials credentials = new UsernamePasswordCredentials(
 					request.getUsuario(), request.getSenha());
 			client.getState().setCredentials(AuthScope.ANY, credentials);
 		}
-
+		
+		client.getHostConfiguration().setProxy("proxy.houston.hp.com", 8080);
+		
 		try {
-			int status = client.executeMethod(method);
-			
-			response[0] = String.valueOf(status);
-			
-			// Status OK
-			if (status == HttpStatus.SC_OK) {
-				response[1] = method.getResponseBodyAsString();
-				System.out.println(response);
+			if (request.getMetodo().equals("POST")) {
+				PostMethod method = new PostMethod(request.getUrl());
+				method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, myretryhandler);
+				
+				for (NameValuePair parametro : request.getParametros()) {
+					method.addParameter(parametro.getName(), parametro.getValue());
+				}
+				
+				int status = client.executeMethod(method);
+				
+				response[0] = String.valueOf(status);
+				
+				// Status OK
+				if (status == HttpStatus.SC_OK) {
+					response[1] = "<span style='color:green;'>Dados enviados com sucesso.</span>";
+				}
+				else {
+					response[1] = "<span style='color:red;'>" + method.getStatusLine().toString() + "</span>";
+				}
+
+				// Libera a conexão
+				method.releaseConnection();
 			}
 			else {
-				response[1] = "<span style='color:red;'>" + method.getStatusLine().toString() + "</span>";
-			}
+				GetMethod method = new GetMethod(request.getUrl());
+				method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, myretryhandler);
+				
+				method.setQueryString(request.getParametros().toArray(new NameValuePair[request.getParametros().size()]));
+				
+				int status = client.executeMethod(method);
+				
+				response[0] = String.valueOf(status);
+				
+				// Status OK
+				if (status == HttpStatus.SC_OK) {
+					response[1] = method.getResponseBodyAsString();	
+				}
+				else {
+					response[1] = "<span style='color:red;'>" + method.getStatusLine().toString() + "</span>";
+				}
 
-			// Libera a conexão
-			method.releaseConnection();
+				// Libera a conexão
+				method.releaseConnection();
+			}
 		} catch (HttpException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
