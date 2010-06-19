@@ -107,6 +107,15 @@
 			out.print("var nomeRecurso = $this.find('#nomeRecurso');");
 			out.print("nomeRecurso.html('" + recurso.getNome() + "');");
 			
+			// Desabilita Two-Way quando for POST
+			if ("POST".equals(recurso.getMetodo())) {
+				out.print("var twoWayDisable = $this.find('#twoWay');");
+				out.print("twoWayDisable.attr('disabled', true);");
+				
+				out.print("var opcaoTwoWayDisable = $this.find('#opcaoTwoWay');");
+				out.print("opcaoTwoWayDisable.attr('disabled', true);");
+			}
+			
 			if (recurso.getParametros() != null) {
 				for (Parametro parametro:recurso.getParametros()) {
 					String disabled = "";

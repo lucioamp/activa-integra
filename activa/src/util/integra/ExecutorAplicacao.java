@@ -53,7 +53,7 @@ public class ExecutorAplicacao {
 			client.getState().setCredentials(AuthScope.ANY, credentials);
 		}
 		
-		client.getHostConfiguration().setProxy("proxy.houston.hp.com", 8080);
+//		client.getHostConfiguration().setProxy("proxy.houston.hp.com", 8080);
 		
 		try {
 			if (request.getMetodo().equals("POST")) {

@@ -14,6 +14,8 @@
 			var table = $this.find("table");
 			var tbody = table.find('tbody');
 
+			var botaoVoltar = $this.find('button#voltar').click(function() { $this.remove(); $oldPage.fadeIn(600); });
+
 			var adicionarPasta = function(id, nome, parent_id, append)
 			{
 				var _tr = tbody.find('tr[id="node-'+id+'"]');
@@ -79,4 +81,12 @@
 		</tr>
 	</thead>
 	<tbody></tbody>
+	<tfoot>
+		<tr>
+			<td align="right" colspan="2">
+			<button type="button" class="ui-state-default ui-corner-all"
+				name="voltar" id="voltar">Voltar</button>
+			</td>
+		</tr>
+	</tfoot>
 </table>

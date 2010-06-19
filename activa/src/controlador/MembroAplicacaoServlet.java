@@ -234,14 +234,17 @@ public class MembroAplicacaoServlet extends HttpServlet {
 			usuarioAplicacao.setMostrarJanela(mostrarJanela);
 			if (twoWay) {
 				usuarioAplicacao.setAtualizacaoAutomatica(opcaoTwoWay);
-				try {
-					usuarioAplicacao.setTempoValor(Integer.valueOf(tempoValor));
-				} catch (NumberFormatException ex) {
-					usuarioAplicacao.setMensagem("Campo Tempo é inválido.");
+				
+				if (opcaoTwoWay == 1) {
+					try {
+						usuarioAplicacao.setTempoValor(Integer.valueOf(tempoValor));
+					} catch (NumberFormatException ex) {
+						usuarioAplicacao.setMensagem("Campo Tempo é inválido.");
 
-					request.setAttribute("jsonObject", usuarioAplicacao);
-					request.getRequestDispatcher("pages/empty.jsp").forward(request, response);
-					break;
+						request.setAttribute("jsonObject", usuarioAplicacao);
+						request.getRequestDispatcher("pages/empty.jsp").forward(request, response);
+						break;
+					}
 				}
 			}
 
@@ -257,22 +260,24 @@ public class MembroAplicacaoServlet extends HttpServlet {
 				UsuarioAplicacaoParametro.excluir(usuarioAplicacao.getIdUsuarioAplicacao());
 
 				for (int i = 0; i < arrUsar.length; i++) {
-					Long idParametro = Long.valueOf(arrUsar[i]);
+					if (arrUsar[i] != null && !arrUsar[i].equals("")) {
+						Long idParametro = Long.valueOf(arrUsar[i]);
 
-					UsuarioAplicacaoParametro parametro = new UsuarioAplicacaoParametro();
-					parametro.setIdUsuarioAplicacao(usuarioAplicacao.getIdUsuarioAplicacao());
-					parametro.setIdParametro(idParametro);
+						UsuarioAplicacaoParametro parametro = new UsuarioAplicacaoParametro();
+						parametro.setIdUsuarioAplicacao(usuarioAplicacao.getIdUsuarioAplicacao());
+						parametro.setIdParametro(idParametro);
 
-					String valorPadrao = "";
-					if (arrParamValor.length > i) {
-						valorPadrao = arrParamValor[i];
+						String valorPadrao = "";
+						if (arrParamValor.length > i) {
+							valorPadrao = arrParamValor[i];
+						}
+						parametro.setValorPadrao(valorPadrao);
+
+						List<String> bloquearLista = Arrays.asList(arrBloquear);
+						parametro.setBloquearValor(bloquearLista.contains(arrUsar[i]));
+
+						parametro.incluir();
 					}
-					parametro.setValorPadrao(valorPadrao);
-
-					List<String> bloquearLista = Arrays.asList(arrBloquear);
-					parametro.setBloquearValor(bloquearLista.contains(arrUsar[i]));
-
-					parametro.incluir();
 				}
 
 				usuarioAplicacao.setMensagem("Edição do Mashup realizada com sucesso.");
@@ -347,12 +352,8 @@ public class MembroAplicacaoServlet extends HttpServlet {
 					recurso.setIdRecurso(usuarioAplicacao.getIdRecurso());
 					recurso.consultar(recurso);
 					
-					// TODO - Retirar
-					recurso.setBase("http://search.twitter.com");
-					recurso.setPath("search.atom");
-					//recurso.setBase("https://api.del.icio.us");
-					//recurso.setPath("v1/posts/all");
-					recurso.setMetodo("GET");
+//					recurso.setBase("http://search.twitter.com");
+//					recurso.setPath("search.atom");
 					
 					String separador = "";
 					if (recurso.getBase().substring(recurso.getBase().length() - 1) != "/") {
@@ -386,9 +387,7 @@ public class MembroAplicacaoServlet extends HttpServlet {
 									arrParamValor[i]));
 				}
 				
-				// TODO - Remover
-				// aplicacaoRequest.getParametros().add(new NameValuePair("results", "10"));
-				aplicacaoRequest.getParametros().add(new NameValuePair("q", "web"));
+//				aplicacaoReque7st.getParametros().add(new NameValuePair("q", "web"));
 	
 			} catch (Exception e) {
 				request.setAttribute("msg", "Não foi possível executar aplicação.");
