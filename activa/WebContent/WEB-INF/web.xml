@@ -329,4 +329,14 @@
     <servlet-name>MembroAplicacaoServlet</servlet-name>
     <url-pattern>/MembroAplicacaoServlet</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>AplicacaoExternaCometServlet</display-name>
+    <servlet-name>AplicacaoExternaCometServlet</servlet-name>
+    <servlet-class>controlador.AplicacaoExternaCometServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>AplicacaoExternaCometServlet</servlet-name>
+    <url-pattern>/AplicacaoExternaCometServlet</url-pattern>
+  </servlet-mapping>
 </web-app>

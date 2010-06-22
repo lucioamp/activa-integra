@@ -428,7 +428,7 @@ public class MembroAplicacaoServlet extends HttpServlet {
 
 						retorno = byte1.toString();
 						
-						// TODO - Tentar converter para HTML
+						// TODO - Tentar converter para HTML. Verificar o uso do ROME aqui.
 					}
 					else {
 						retorno = resultado[1];
