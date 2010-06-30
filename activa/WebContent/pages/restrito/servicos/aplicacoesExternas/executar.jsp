@@ -18,7 +18,8 @@
 			var botaoVoltar = $this.find('button#voltar').click(function() { $this.remove(); $oldPage.fadeIn(600); });
 
 			$this.find('button#executar').click(function() {
-				executaAplicacao();
+				//executaAplicacao();
+				executaReverseAjax();
 			});
 
 			<%
@@ -89,6 +90,29 @@
 				}
 			}
 		);
+	};
+
+	var executaReverseAjax = function()
+	{
+		var request =  new XMLHttpRequest();
+		request.open("POST", "http://localhost:8080/activa/AplicacaoExternaCometServlet", true);
+		request.setRequestHeader("Content-Type",
+		                         "application/x-javascript;");
+
+		request.onreadystatechange = function() {
+			if (request.readyState == 4) {
+                if (request.status == 200){
+				    if (request.responseText) {
+				    	var div = thisObj.find('#divResultado');
+				    	div.html(request.responseText);
+				    }
+                }
+
+                executaReverseAjax();
+		  	}
+		};
+		
+		request.send(null);
 	};
 
 	var executaAposLogin = function(usuario, senha) 

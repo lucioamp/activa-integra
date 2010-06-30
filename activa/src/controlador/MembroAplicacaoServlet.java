@@ -387,7 +387,7 @@ public class MembroAplicacaoServlet extends HttpServlet {
 									arrParamValor[i]));
 				}
 				
-//				aplicacaoReque7st.getParametros().add(new NameValuePair("q", "web"));
+//				aplicacaoRequest.getParametros().add(new NameValuePair("q", "web"));
 	
 			} catch (Exception e) {
 				request.setAttribute("msg", "Não foi possível executar aplicação.");
@@ -428,7 +428,7 @@ public class MembroAplicacaoServlet extends HttpServlet {
 
 						retorno = byte1.toString();
 						
-						// TODO - Tentar converter para HTML. Verificar o uso do ROME aqui.
+						// TODO - Tentar converter para HTML. Verificar o uso do ROME ou SyndFeed aqui.
 					}
 					else {
 						retorno = resultado[1];

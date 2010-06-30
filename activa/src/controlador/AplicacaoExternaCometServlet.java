@@ -1,11 +1,11 @@
 package controlador;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.URL;
+import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletResponse;
@@ -13,9 +13,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import modelo.integra.ExecutorAplicacaoRequest;
+
 import org.apache.catalina.CometEvent;
 import org.apache.catalina.CometProcessor;
+import org.apache.commons.httpclient.NameValuePair;
 
+import util.integra.ExecutorAplicacao;
+
+import com.sun.syndication.feed.synd.SyndContentImpl;
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.io.SyndFeedInput;
@@ -24,11 +30,11 @@ public class AplicacaoExternaCometServlet extends HttpServlet implements CometPr
 	private static final long serialVersionUID = 719792464317818148L;
 
 	private MessageSender messageSender = null;
-	private static final Integer TIMEOUT = 60 * 1000;
+	private static final Integer TIMEOUT = 30 * 60 * 1000;
 
 	@Override
 	public void destroy() {
-//		messageSender.stop();
+		// messageSender.stop();
 		messageSender = null;
 
 	}
@@ -42,7 +48,7 @@ public class AplicacaoExternaCometServlet extends HttpServlet implements CometPr
 		messageSenderThread.start();
 
 	}
-	
+
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
 	 *      response)
@@ -68,10 +74,11 @@ public class AplicacaoExternaCometServlet extends HttpServlet implements CometPr
 
 		if (event.getEventType() == CometEvent.EventType.BEGIN) {
 			request.setAttribute("org.apache.tomcat.comet.timeout", TIMEOUT);
-			log("Begin for session: " + request.getSession(true).getId());
+
 			messageSender.setConnection(response);
-			Weatherman weatherman = new Weatherman(95118, 32408);
-			new Thread(weatherman).start();
+
+			Executor executor = new Executor();
+			new Thread(executor).start();
 		} else if (event.getEventType() == CometEvent.EventType.ERROR) {
 			log("Error for session: " + request.getSession(true).getId());
 			event.close();
@@ -86,93 +93,93 @@ public class AplicacaoExternaCometServlet extends HttpServlet implements CometPr
 
 	private class MessageSender implements Runnable {
 
-	    protected boolean running = true;
-	    protected final ArrayList<String> messages = new ArrayList<String>();
-	    private ServletResponse connection;
-	    private synchronized void setConnection(ServletResponse connection){
-	        this.connection = connection;
-	        notify();
-	    }
-	    public void send(String message) {
-	        synchronized (messages) {
-	            messages.add(message);
-	            log("Message added #messages=" + messages.size());
-	            messages.notify();
-	        }
-	    }
-	    public void run() {
-	        while (running) {
-	            if (messages.size() == 0) {
-	                try {
-	                    synchronized (messages) {
-	                        messages.wait();
-	                    }
-	                } catch (InterruptedException e) {
-	                    // Ignore
-	                }
-	            }
-	            String[] pendingMessages = null;
-	            synchronized (messages) {
-	                pendingMessages = messages.toArray(new String[0]);
-	                messages.clear();
-	            }
-	            try {
-	                if (connection == null){
-	                    try{
-	                        synchronized(this){
-	                            wait();
-	                        }
-	                    } catch (InterruptedException e){
-	                        // Ignore
-	                    }
-	                }
-	                PrintWriter writer = connection.getWriter();
-	                for (int j = 0; j < pendingMessages.length; j++) {
-	                    final String forecast = pendingMessages[j] + "<br>";
-	                    writer.println(forecast);
-	                    log("Writing:" + forecast);
-	                }
-	                writer.flush();
-	                writer.close();
-	                connection = null;
-	                log("Closing connection");
-	            } catch (IOException e) {
-	                log("IOExeption sending message", e);
-	            }
-	        }
-	    }
-	}
+		protected boolean running = true;
+		protected final ArrayList<String> messages = new ArrayList<String>();
+		private ServletResponse connection;
 
-	private class Weatherman implements Runnable {
+		private synchronized void setConnection(ServletResponse connection) {
+			this.connection = connection;
+			notify();
+		}
 
-		private final List<URL> zipCodes;
-		private final String YAHOO_WEATHER = "http://weather.yahooapis.com/forecastrss?p=";
-
-		public Weatherman(Integer... zips) {
-			zipCodes = new ArrayList<URL>(zips.length);
-			for (Integer zip : zips) {
-				try {
-					zipCodes.add(new URL(YAHOO_WEATHER + zip));
-				} catch (Exception e) {
-					// dont add it if it sucks
-				}
+		public void send(String message) {
+			synchronized (messages) {
+				messages.add(message);
+				log("Message added #messages=" + messages.size());
+				messages.notify();
 			}
 		}
 
 		public void run() {
-			int i = 0;
-			while (i >= 0) {
-				int j = i % zipCodes.size();
-				SyndFeedInput input = new SyndFeedInput();
-				try {
-					SyndFeed feed = input.build(new InputStreamReader(zipCodes.get(j).openStream()));
-					SyndEntry entry = (SyndEntry) feed.getEntries().get(0);
-					messageSender.send(entryToHtml(entry));
-					Thread.sleep(30000L);
-				} catch (Exception e) {
-					// just eat it, eat it
+			while (running) {
+				if (messages.size() == 0) {
+					try {
+						synchronized (messages) {
+							messages.wait();
+						}
+					} catch (InterruptedException e) {
+						// Ignore
+					}
 				}
-				i++;
+				String[] pendingMessages = null;
+				synchronized (messages) {
+					pendingMessages = messages.toArray(new String[0]);
+					messages.clear();
+				}
+				try {
+					if (connection == null) {
+						try {
+							synchronized (this) {
+								wait();
+							}
+						} catch (InterruptedException e) {
+							// Ignore
+						}
+					}
+					PrintWriter writer = connection.getWriter();
+					for (int j = 0; j < pendingMessages.length; j++) {
+						final String forecast = pendingMessages[j] + "<br>";
+						writer.println(forecast);
+						log("Writing:" + forecast);
+					}
+					writer.flush();
+					writer.close();
+					connection = null;
+					log("Closing connection");
+				} catch (IOException e) {
+					log("IOExeption sending message", e);
+				}
+			}
+		}
+	}
+
+	private class Executor implements Runnable {
+
+		public void run() {
+			SyndFeedInput input = new SyndFeedInput();
+			try {
+				ExecutorAplicacaoRequest aplicacaoRequest = new ExecutorAplicacaoRequest();
+				aplicacaoRequest.setUrl("http://search.twitter.com/search.atom");
+				aplicacaoRequest.setMetodo("GET");
+				aplicacaoRequest.getParametros().add(new NameValuePair("q", "web"));
+
+				ExecutorAplicacao executor = new ExecutorAplicacao();
+				String[] resultado = executor.executaAplicação(aplicacaoRequest);
+
+				StringWriter xmlBuffer = new StringWriter();
+				xmlBuffer.write(resultado[1]);
+				ByteArrayInputStream xmlParseInputStream = new ByteArrayInputStream(xmlBuffer.toString().getBytes());
+
+				SyndFeed feed = input.build(new InputStreamReader(xmlParseInputStream));
+				SyndEntry entry = (SyndEntry) feed.getEntries().get(0);
+
+				Thread.sleep(60000L);
+
+				synchronized (messageSender) {
+					messageSender.send(entryToHtml(entry));
+				}
+			} catch (Exception e) {
+
 			}
 		}
 
@@ -180,7 +187,7 @@ public class AplicacaoExternaCometServlet extends HttpServlet implements CometPr
 			StringBuilder html = new StringBuilder("<h2>");
 			html.append(entry.getTitle());
 			html.append("</h2>");
-			html.append(entry.getDescription().getValue());
+			html.append(((SyndContentImpl) entry.getContents().get(0)).getValue());
 			return html.toString();
 		}
 	}
