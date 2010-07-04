@@ -1,10 +1,7 @@
 package controlador;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.ArrayList;
 
 import javax.servlet.ServletException;
@@ -12,6 +9,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import modelo.integra.ExecutorAplicacaoRequest;
 
@@ -21,20 +19,17 @@ import org.apache.commons.httpclient.NameValuePair;
 
 import util.integra.ExecutorAplicacao;
 
-import com.sun.syndication.feed.synd.SyndContentImpl;
-import com.sun.syndication.feed.synd.SyndEntry;
-import com.sun.syndication.feed.synd.SyndFeed;
-import com.sun.syndication.io.SyndFeedInput;
-
 public class AplicacaoExternaCometServlet extends HttpServlet implements CometProcessor {
 	private static final long serialVersionUID = 719792464317818148L;
 
 	private MessageSender messageSender = null;
 	private static final Integer TIMEOUT = 30 * 60 * 1000;
+	
+	private HttpSession session;
 
 	@Override
 	public void destroy() {
-		// messageSender.stop();
+		messageSender.stop();
 		messageSender = null;
 
 	}
@@ -71,6 +66,8 @@ public class AplicacaoExternaCometServlet extends HttpServlet implements CometPr
 	public void event(CometEvent event) throws IOException, ServletException {
 		HttpServletRequest request = event.getHttpServletRequest();
 		HttpServletResponse response = event.getHttpServletResponse();
+		
+		session = request.getSession(true);
 
 		if (event.getEventType() == CometEvent.EventType.BEGIN) {
 			request.setAttribute("org.apache.tomcat.comet.timeout", TIMEOUT);
@@ -80,10 +77,8 @@ public class AplicacaoExternaCometServlet extends HttpServlet implements CometPr
 			Executor executor = new Executor();
 			new Thread(executor).start();
 		} else if (event.getEventType() == CometEvent.EventType.ERROR) {
-			log("Error for session: " + request.getSession(true).getId());
 			event.close();
 		} else if (event.getEventType() == CometEvent.EventType.END) {
-			log("End for session: " + request.getSession(true).getId());
 			event.close();
 		} else if (event.getEventType() == CometEvent.EventType.READ) {
 			throw new UnsupportedOperationException("This servlet does not accept data");
@@ -101,11 +96,14 @@ public class AplicacaoExternaCometServlet extends HttpServlet implements CometPr
 			this.connection = connection;
 			notify();
 		}
+		
+		public void stop() {
+            running = false;
+        }
 
 		public void send(String message) {
 			synchronized (messages) {
 				messages.add(message);
-				log("Message added #messages=" + messages.size());
 				messages.notify();
 			}
 		}
@@ -156,39 +154,35 @@ public class AplicacaoExternaCometServlet extends HttpServlet implements CometPr
 	private class Executor implements Runnable {
 
 		public void run() {
-			SyndFeedInput input = new SyndFeedInput();
 			try {
 				ExecutorAplicacaoRequest aplicacaoRequest = new ExecutorAplicacaoRequest();
-				aplicacaoRequest.setUrl("http://search.twitter.com/search.atom");
+				aplicacaoRequest.setIdUsuarioAplicacao(1L);
+				aplicacaoRequest.setUrl("https://api.del.icio.us/v1/posts/all");
 				aplicacaoRequest.setMetodo("GET");
-				aplicacaoRequest.getParametros().add(new NameValuePair("q", "web"));
+				aplicacaoRequest.setUsuario("lucioamp");
+				aplicacaoRequest.setSenha("7321007a");
+				aplicacaoRequest.getParametros().add(new NameValuePair("results", "1"));
 
 				ExecutorAplicacao executor = new ExecutorAplicacao();
 				String[] resultado = executor.executaAplicação(aplicacaoRequest);
 
-				StringWriter xmlBuffer = new StringWriter();
-				xmlBuffer.write(resultado[1]);
-				ByteArrayInputStream xmlParseInputStream = new ByteArrayInputStream(xmlBuffer.toString().getBytes());
-
-				SyndFeed feed = input.build(new InputStreamReader(xmlParseInputStream));
-				SyndEntry entry = (SyndEntry) feed.getEntries().get(0);
-
-				Thread.sleep(60000L);
-
-				synchronized (messageSender) {
-					messageSender.send(entryToHtml(entry));
+				String conteudoAtual = resultado[1];
+				
+				String conteudoAnterior = (String) session.getAttribute(String.valueOf(aplicacaoRequest.getIdUsuarioAplicacao()));
+				
+				String conteudoFinal = "";
+				if (!conteudoAtual.equals(conteudoAnterior)) {
+					conteudoFinal = conteudoAtual;
+					
+					session.setAttribute(String.valueOf(aplicacaoRequest.getIdUsuarioAplicacao()), conteudoFinal);
 				}
+				
+				Thread.sleep(30000L);
+				
+				messageSender.send(conteudoAtual);
 			} catch (Exception e) {
-
+				log("Erro: " + e.getMessage());
 			}
-		}
-
-		private String entryToHtml(SyndEntry entry) {
-			StringBuilder html = new StringBuilder("<h2>");
-			html.append(entry.getTitle());
-			html.append("</h2>");
-			html.append(((SyndContentImpl) entry.getContents().get(0)).getValue());
-			return html.toString();
 		}
 	}
 

@@ -1,10 +1,6 @@
 package controlador;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -15,11 +11,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 
 import modelo.Usuario;
 import modelo.integra.AplicacaoExterna;
@@ -31,9 +22,6 @@ import modelo.integra.UsuarioAplicacaoParametro;
 
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.http.HttpStatus;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.json.XML;
 
 import util.integra.ExecutorAplicacao;
 
@@ -402,47 +390,7 @@ public class MembroAplicacaoServlet extends HttpServlet {
 				// Abrir janela de login
 				request.setAttribute("msg", "login");
 			} else {
-				String retorno = "";
-
-				try {
-					// JSON - Converte para XML
-					if (resultado[1].startsWith("{")) {
-						JSONObject obj = new JSONObject(resultado[1]);
-						resultado[1] = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?><resultado>" + XML.toString(obj) + "</resultado>";
-					}
-
-					if (resultado[1].startsWith("<?xml")) {
-						StringWriter xmlBuffer = new StringWriter();
-						xmlBuffer.write(resultado[1].replace("UTF-8", "iso-8859-1").replaceAll("\\n", ""));
-
-						ByteArrayInputStream xmlParseInputStream = new ByteArrayInputStream(xmlBuffer.toString().getBytes());
-
-						TransformerFactory tFactory = TransformerFactory.newInstance();
-						InputStream xslInput = getClass().getResourceAsStream("/xmlOutput.xsl");
-
-						Transformer transformer = tFactory.newTransformer(new StreamSource(xslInput));
-
-						ByteArrayOutputStream byte1 = new ByteArrayOutputStream();
-
-						transformer.transform(new StreamSource(xmlParseInputStream), new StreamResult(byte1));
-
-						retorno = byte1.toString();
-						
-						// TODO - Tentar converter para HTML. Verificar o uso do ROME ou SyndFeed aqui.
-					}
-					else {
-						retorno = resultado[1];
-					}
-
-					request.setAttribute("msg", retorno);
-
-				} catch (TransformerException e) {
-					retorno = "Erro ao montar visualização do retorno.";
-				} catch (JSONException e) {
-					retorno = "Erro ao converter retorno para XML.";
-				} finally {
-					request.setAttribute("msg", retorno);
-				}
+				request.setAttribute("msg", resultado[1]);
 			}
 
 			// Atualiza na lista da sessão

@@ -1,6 +1,20 @@
 package util.integra;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringWriter;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import modelo.integra.ExecutorAplicacaoRequest;
 
@@ -19,6 +33,15 @@ import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.http.HttpStatus;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.XML;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import com.sun.syndication.feed.synd.SyndContentImpl;
+import com.sun.syndication.feed.synd.SyndEntry;
+import com.sun.syndication.feed.synd.SyndFeed;
+import com.sun.syndication.io.SyndFeedInput;
 
 public class ExecutorAplicacao {
 	HttpMethodRetryHandler myretryhandler = new HttpMethodRetryHandler() {
@@ -53,7 +76,7 @@ public class ExecutorAplicacao {
 			client.getState().setCredentials(AuthScope.ANY, credentials);
 		}
 		
-		client.getHostConfiguration().setProxy("proxy.houston.hp.com", 8080);
+//		client.getHostConfiguration().setProxy("proxy.houston.hp.com", 8080);
 		
 		try {
 			if (request.getMetodo().equals("POST")) {
@@ -91,7 +114,7 @@ public class ExecutorAplicacao {
 				
 				// Status OK
 				if (status == HttpStatus.SC_OK) {
-					response[1] = method.getResponseBodyAsString();	
+					response[1] = formataRetorno(method.getResponseBodyAsString());	
 				}
 				else {
 					response[1] = "<span style='color:red;'>" + method.getStatusLine().toString() + "</span>";
@@ -110,10 +133,82 @@ public class ExecutorAplicacao {
 		return response;
 	}
 	
+	private String formataRetorno(String responseBodyAsString) {
+		String retorno = "";
+		
+		try {
+			// JSON - Converte para XML
+			if (responseBodyAsString.startsWith("{")) {
+				JSONObject obj = new JSONObject(responseBodyAsString);
+				responseBodyAsString = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?><resultado>" + XML.toString(obj)
+						+ "</resultado>";
+			} else if (responseBodyAsString.startsWith("<?xml")) {
+				StringWriter xmlBuffer = new StringWriter();
+				xmlBuffer.write(responseBodyAsString.replace("UTF-8", "iso-8859-1").replaceAll("\\n", ""));
+
+				ByteArrayInputStream xmlParseInputStream = new ByteArrayInputStream(xmlBuffer.toString().getBytes());
+
+				DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+				DocumentBuilder builder = factory.newDocumentBuilder();
+				Document document = builder.parse(xmlParseInputStream);
+
+				// Remove os comentários
+				removeAll(document, Node.COMMENT_NODE, null);
+				
+		        Source source = new DOMSource(document);
+		        
+				TransformerFactory tFactory = TransformerFactory.newInstance();
+				InputStream xslInput = getClass().getResourceAsStream("/xmlOutput.xsl");
+
+				Transformer transformer = tFactory.newTransformer(new StreamSource(xslInput));
+
+				ByteArrayOutputStream byte1 = new ByteArrayOutputStream();
+
+				transformer.transform(source, new StreamResult(byte1));
+
+				retorno = byte1.toString();
+			} else if (responseBodyAsString.indexOf("<feed") > -1) {
+				StringWriter xmlBuffer = new StringWriter();
+				xmlBuffer.write(responseBodyAsString);
+				ByteArrayInputStream xmlParseInputStream = new ByteArrayInputStream(xmlBuffer.toString().getBytes());
+
+				SyndFeedInput input = new SyndFeedInput();
+				SyndFeed feed = input.build(new InputStreamReader(xmlParseInputStream));
+				SyndEntry entry = (SyndEntry) feed.getEntries().get(0);
+				retorno = entryToHtml(entry);
+			} else {
+				retorno = responseBodyAsString;
+			}
+		} catch (Exception e) {
+			retorno = "<span style='color:red;'>" + e.getMessage() + "</span>";
+		}
+
+		return retorno;
+	}
+	
+	private String entryToHtml(SyndEntry entry) {
+		StringBuilder html = new StringBuilder("<h2>");
+		html.append(entry.getTitle());
+		html.append("</h2>");
+		html.append(((SyndContentImpl) entry.getContents().get(0)).getValue());
+		return html.toString();
+	}
+
 	public String getJSONFormatado(JSONObject obj) throws JSONException {
 		String retorno = obj.toString(4).replaceAll("\\n", "<br>").replaceAll(" ", "&nbsp;");
 		retorno = retorno.substring(1, retorno.length() - 2);
 		
 		return retorno;
 	}
+	
+	public static void removeAll(Node node, short nodeType, String name) {
+		if (node.getNodeType() == nodeType && (name == null || node.getNodeName().equals(name))) {
+			node.getParentNode().removeChild(node);
+		} else {
+			NodeList list = node.getChildNodes();
+			for (int i = 0; i < list.getLength(); i++) {
+				removeAll(list.item(i), nodeType, name);
+			}
+		}
+	} 
 }

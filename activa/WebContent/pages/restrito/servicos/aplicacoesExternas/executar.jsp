@@ -95,14 +95,14 @@
 	var executaReverseAjax = function()
 	{
 		var request =  new XMLHttpRequest();
-		request.open("POST", "http://localhost:8080/activa/AplicacaoExternaCometServlet", true);
+		request.open("POST", "../../AplicacaoExternaCometServlet", true);
 		request.setRequestHeader("Content-Type",
 		                         "application/x-javascript;");
 
 		request.onreadystatechange = function() {
 			if (request.readyState == 4) {
                 if (request.status == 200){
-				    if (request.responseText) {
+				    if (request.responseText && request.responseText != '') {
 				    	var div = thisObj.find('#divResultado');
 				    	div.html(request.responseText);
 				    }
