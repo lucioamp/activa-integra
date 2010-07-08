@@ -48,6 +48,7 @@
 <script type="text/javascript" src="../../js/events/menu_restrito.js"></script>
 <script type="text/javascript" src="../../js/events/desktop_restrito.js"></script>
 <script type="text/javascript" src="../../js/classes/String.js"></script>
+<script type="text/javascript" src="../../js/events/notificacao_automatica.js"></script>
 <script type="text/javascript">
 			$(document).ready(function () {
 				globalEvent('basico');
@@ -99,6 +100,8 @@
 						if(!Membro.isProfessor(usuario))
 							out.print("menuOptionConteudo.find('a[href=\"#NOVO_AMBIENTE\"]').hide()");
 						
+						// Notificações automáticas
+						out.print("executaReverseAjax();");
 					}
 				}
 			%>
@@ -152,5 +155,8 @@
 </table>
 </div>
 </div>
+
+<div id="notificacao" style="display: none;"></div>
+
 </body>
 </html>
