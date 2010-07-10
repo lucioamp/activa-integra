@@ -35,6 +35,7 @@
 				modulo_loaded: false,
 				maximize: (object.maximize == null ? true : object.maximize),
 				minimize: (object.minimize == null ? true : object.minimize),
+				fadeOut: (object.fadeOut == null ? 0 : object.fadeOut),
 				resizable: (object.resizable == null ? (isInternetExplorer ? false : false) : object.resizable),
 				draggable: (object.draggable == null ? true : object.draggable),
 				title: object.title,
@@ -417,6 +418,11 @@
 					buttons: buttons
 				});
 			}
+			
+			if(param.fadeOut > 0)
+			{
+				$(this).fadeOut(param.fadeOut);
+			};
 				
 			return $(this);
 		},

@@ -136,7 +136,9 @@ public class AplicacaoExternaCometServlet extends HttpServlet implements CometPr
 					}
 					PrintWriter writer = connection.getWriter();
 					for (int j = 0; j < pendingMessages.length; j++) {
-						final String forecast = pendingMessages[j] + "<br>";
+						//final String forecast = pendingMessages[j] + "<br>";
+						String forecast = "Aplicação XXX retornou novos dados:<br/><br/>";
+						forecast += pendingMessages[j];
 						writer.println(forecast);
 						log("Writing:" + forecast);
 					}
@@ -179,7 +181,7 @@ public class AplicacaoExternaCometServlet extends HttpServlet implements CometPr
 				
 				Thread.sleep(30000L);
 				
-				messageSender.send(conteudoAtual);
+				messageSender.send(conteudoFinal);
 			} catch (Exception e) {
 				log("Erro: " + e.getMessage());
 			}

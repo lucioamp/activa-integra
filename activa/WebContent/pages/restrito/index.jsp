@@ -52,6 +52,11 @@
 <script type="text/javascript">
 			$(document).ready(function () {
 				globalEvent('basico');
+
+				$('button#limparNotificacao').click(function() {
+					notificacaoDialog.fadeOut(5000);
+				});
+				
 			<%
 				if(request.getAttribute("msg") != null)
 					out.print("$(this).alert('"+request.getAttribute("msg")+"');");
@@ -106,6 +111,8 @@
 				}
 			%>
 			});
+
+			
 		</script>
 </head>
 <body>
@@ -156,7 +163,11 @@
 </div>
 </div>
 
-<div id="notificacao" style="display: none;"></div>
+<div id="notificacao" style="display: none;">
+	<div id="notificacaoConteudo"></div>
+	<button type="button" class="ui-state-default ui-corner-all"
+				name="limparNotificacao" id="limparNotificacao">Limpar Aviso</button>
+</div>
 
 </body>
 </html>
