@@ -3,6 +3,7 @@ package modelo.integra;
 import interfaces.integra.UsuarioAplicacaoI;
 
 import java.util.Collection;
+import java.util.List;
 
 import util.AplicacaoExternaException;
 import util.Constantes;
@@ -24,6 +25,9 @@ public class UsuarioAplicacao {
 	private Integer tempoValor;
 	
 	private String mensagem;
+	
+	private String usuario;
+	private String senha;
 	
 	private static UsuarioAplicacaoI dao;
 
@@ -217,5 +221,25 @@ public class UsuarioAplicacao {
 	
 	public void consultarPorId(UsuarioAplicacao usuarioAplicacao) throws AplicacaoExternaException {
 		getDAO().consultarPorId(usuarioAplicacao);
+	}
+	
+	public static List<UsuarioAplicacao> consultarNotificacaoAutomatica(UsuarioAplicacao usuarioAplicacao) throws AplicacaoExternaException {
+		return getDAO().consultarNotificacaoAutomatica(usuarioAplicacao);
+	}
+
+	public String getUsuario() {
+		return usuario;
+	}
+
+	public void setUsuario(String usuario) {
+		this.usuario = usuario;
+	}
+
+	public String getSenha() {
+		return senha;
+	}
+
+	public void setSenha(String senha) {
+		this.senha = senha;
 	}
 }

@@ -1,6 +1,7 @@
 package interfaces.integra;
 
 import java.util.Collection;
+import java.util.List;
 
 import modelo.integra.UsuarioAplicacao;
 import util.AplicacaoExternaException;
@@ -13,4 +14,5 @@ public interface UsuarioAplicacaoI {
 	public void atualizar (UsuarioAplicacao usuarioAplicacao) throws AplicacaoExternaException;
 	public void consultarUsuarioAplicacao(UsuarioAplicacao usuarioAplicacao) throws AplicacaoExternaException;
 	public void consultarPorId(UsuarioAplicacao usuarioAplicacao) throws AplicacaoExternaException;
+	public List<UsuarioAplicacao> consultarNotificacaoAutomatica(UsuarioAplicacao usuarioAplicacao) throws AplicacaoExternaException;
 }

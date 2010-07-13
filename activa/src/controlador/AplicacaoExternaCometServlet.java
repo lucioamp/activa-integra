@@ -3,6 +3,7 @@ package controlador;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletResponse;
@@ -11,12 +12,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import modelo.Usuario;
 import modelo.integra.ExecutorAplicacaoRequest;
+import modelo.integra.UsuarioAplicacao;
 
 import org.apache.catalina.CometEvent;
 import org.apache.catalina.CometProcessor;
-import org.apache.commons.httpclient.NameValuePair;
 
+import util.AplicacaoExternaException;
 import util.integra.ExecutorAplicacao;
 
 public class AplicacaoExternaCometServlet extends HttpServlet implements CometProcessor {
@@ -73,9 +76,25 @@ public class AplicacaoExternaCometServlet extends HttpServlet implements CometPr
 			request.setAttribute("org.apache.tomcat.comet.timeout", TIMEOUT);
 
 			messageSender.setConnection(response);
+			
+			// TODO - Tem que parar todas as threads ativas de executor
+			
+			Usuario usuario = (Usuario) session.getAttribute("membro");
+			if (usuario != null) {
+				UsuarioAplicacao usuarioAplicacaoReq = new UsuarioAplicacao();
+				usuarioAplicacaoReq.setPkUsuario(usuario.getPkUsuario());
 
-			Executor executor = new Executor();
-			new Thread(executor).start();
+				try {
+					List<UsuarioAplicacao> usuarioAplicacaoLista = UsuarioAplicacao
+							.consultarNotificacaoAutomatica(usuarioAplicacaoReq);
+					for (UsuarioAplicacao usuarioAplicacao : usuarioAplicacaoLista) {
+						Executor executor = new Executor(usuarioAplicacao);
+						new Thread(executor).start();
+					}
+				} catch (AplicacaoExternaException e) {
+					e.printStackTrace();
+				}
+			}
 		} else if (event.getEventType() == CometEvent.EventType.ERROR) {
 			event.close();
 		} else if (event.getEventType() == CometEvent.EventType.END) {
@@ -136,11 +155,8 @@ public class AplicacaoExternaCometServlet extends HttpServlet implements CometPr
 					}
 					PrintWriter writer = connection.getWriter();
 					for (int j = 0; j < pendingMessages.length; j++) {
-						//final String forecast = pendingMessages[j] + "<br>";
-						String forecast = "Aplicação XXX retornou novos dados:<br/><br/>";
-						forecast += pendingMessages[j];
-						writer.println(forecast);
-						log("Writing:" + forecast);
+						writer.println(pendingMessages[j]);
+						log("Writing:" + pendingMessages[j]);
 					}
 					writer.flush();
 					writer.close();
@@ -154,21 +170,33 @@ public class AplicacaoExternaCometServlet extends HttpServlet implements CometPr
 	}
 
 	private class Executor implements Runnable {
+		private ExecutorAplicacaoRequest aplicacaoRequest = new ExecutorAplicacaoRequest();
+		
+		public Executor(UsuarioAplicacao usuarioAplicacao) {
+			try {
+				aplicacaoRequest.setIdUsuarioAplicacao(usuarioAplicacao.getIdUsuarioAplicacao());
+				aplicacaoRequest.setUsuario(usuarioAplicacao.getUsuario());
+				aplicacaoRequest.setSenha(usuarioAplicacao.getSenha());
+				
+				aplicacaoRequest.aplicaRecurso(usuarioAplicacao.getIdRecurso());
+				aplicacaoRequest.aplicaParametros(null);
+			} catch (AplicacaoExternaException e) {
+				e.printStackTrace();
+			}
+//			aplicacaoRequest.setUrl("https://api.del.icio.us/v1/posts/all");
+//			aplicacaoRequest.setMetodo("GET");
+//			aplicacaoRequest.setUsuario("lucioamp");
+//			aplicacaoRequest.setSenha("7321007a");
+//			aplicacaoRequest.getParametros().add(new NameValuePair("results", "1"));
+		}
 
 		public void run() {
 			try {
-				ExecutorAplicacaoRequest aplicacaoRequest = new ExecutorAplicacaoRequest();
-				aplicacaoRequest.setIdUsuarioAplicacao(1L);
-				aplicacaoRequest.setUrl("https://api.del.icio.us/v1/posts/all");
-				aplicacaoRequest.setMetodo("GET");
-				aplicacaoRequest.setUsuario("lucioamp");
-				aplicacaoRequest.setSenha("7321007a");
-				aplicacaoRequest.getParametros().add(new NameValuePair("results", "1"));
-
 				ExecutorAplicacao executor = new ExecutorAplicacao();
 				String[] resultado = executor.executaAplicação(aplicacaoRequest);
 
-				String conteudoAtual = resultado[1];
+				String conteudoAtual = "Aplica&ccedil;&atilde;o [" + aplicacaoRequest.getNomeAplicacao() + " - "
+					+ aplicacaoRequest.getNomeRecurso() + "] retornou novos dados:<br/><br/>" + resultado[1];
 				
 				String conteudoAnterior = (String) session.getAttribute(String.valueOf(aplicacaoRequest.getIdUsuarioAplicacao()));
 				

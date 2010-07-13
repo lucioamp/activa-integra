@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import modelo.integra.UsuarioAplicacao;
 import util.AplicacaoExternaException;
@@ -227,6 +228,35 @@ public class UsuarioAplicacaoDAO implements UsuarioAplicacaoI {
 		}
 	}
 	
+	public List<UsuarioAplicacao> consultarNotificacaoAutomatica(UsuarioAplicacao usuarioAplicacao) throws AplicacaoExternaException{
+		List<UsuarioAplicacao> col = new ArrayList<UsuarioAplicacao>();
+		
+		try{
+			conn = ConnectionFactory.getInstance().getConnection();
+			String sql = "select *";
+			sql += " from ae_usuario_aplicacao";
+			sql += " where ((permissao = 1 and pk_usuario = ?) or (permissao = 2)) and atualizacao_automatica = 2";
+		
+			stmt = conn.prepareStatement(sql);
+			
+			stmt.setLong(1, usuarioAplicacao.getPkUsuario());
+			
+			rs = stmt.executeQuery();
+			
+			while (rs.next()){
+				UsuarioAplicacao obj = new UsuarioAplicacao();
+				carregar(rs, obj);
+				col.add(obj);
+			}
+		}catch (Exception e) {
+			throw new AplicacaoExternaException(e);
+		}finally{
+			ConnectionFactory.getInstance().closeConnection(rs, stmt, conn);
+		}
+		
+		return col;
+	}
+	
 	private void carregar(ResultSet rs, UsuarioAplicacao usuarioAplicacao) throws SQLException {
 		usuarioAplicacao.setIdUsuarioAplicacao(rs.getLong("id_usuario_aplicacao"));
 		usuarioAplicacao.setPkUsuario(rs.getLong("pk_usuario"));
@@ -238,5 +268,7 @@ public class UsuarioAplicacaoDAO implements UsuarioAplicacaoI {
 			usuarioAplicacao.setAtualizacaoAutomatica(rs.getInt("atualizacao_automatica"));
 			usuarioAplicacao.setTempoValor(rs.getInt("tempo_valor"));
 		}
+		usuarioAplicacao.setUsuario(rs.getString("usuario"));
+		usuarioAplicacao.setSenha(rs.getString("senha"));
 	}
 }

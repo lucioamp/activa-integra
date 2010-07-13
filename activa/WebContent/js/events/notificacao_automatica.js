@@ -6,6 +6,9 @@ var notificacaoDialog = function()
 			var notificacao = $('#notificacao');
 			notificacao.show();
 			
+			var notificacaoConteudo = $('#notificacaoConteudo');
+			notificacaoConteudo.show();
+			
 			notificacao.showDialog({
 				minimize: false,
 				maximize: false,
@@ -25,7 +28,7 @@ var notificacaoDialog = function()
 		},
 		fadeOut:function(duration)
 		{
-			var notificacao = $('#notificacao');
+			var notificacao = $('#notificacaoConteudo');
 			notificacao.fadeOut(duration);
 		}
 	}
@@ -45,7 +48,7 @@ var executaReverseAjax = function()
             if (request.status == 200){
             	var lastTag = request.responseText.substring(request.responseText.length - 7).trim();
             	
-			    if (request.responseText && request.responseText != null && lastTag != '<br/>') {
+			    if (request.responseText && request.responseText != null && lastTag != '') {
 			    	notificacaoDialog.showDialog();
 			    	
 			    	var div = $('#notificacaoConteudo');

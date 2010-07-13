@@ -54,7 +54,7 @@
 				globalEvent('basico');
 
 				$('button#limparNotificacao').click(function() {
-					notificacaoDialog.fadeOut(5000);
+					notificacaoDialog.fadeOut(2000);
 				});
 				
 			<%
@@ -165,7 +165,7 @@
 
 <div id="notificacao" style="display: none;">
 	<div id="notificacaoConteudo"></div>
-	<button type="button" class="ui-state-default ui-corner-all"
+	<br/><button type="button" class="ui-state-default ui-corner-all"
 				name="limparNotificacao" id="limparNotificacao">Limpar Aviso</button>
 </div>
 

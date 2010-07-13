@@ -20,7 +20,6 @@ import modelo.integra.Recurso;
 import modelo.integra.UsuarioAplicacao;
 import modelo.integra.UsuarioAplicacaoParametro;
 
-import org.apache.commons.httpclient.NameValuePair;
 import org.apache.http.HttpStatus;
 
 import util.integra.ExecutorAplicacao;
@@ -335,21 +334,10 @@ public class MembroAplicacaoServlet extends HttpServlet {
 				} else {
 					aplicacaoRequest = new ExecutorAplicacaoRequest();
 					aplicacaoRequest.setIdUsuarioAplicacao(idUsuarioAplicacao);
-					
-					Recurso recurso = new Recurso();
-					recurso.setIdRecurso(usuarioAplicacao.getIdRecurso());
-					recurso.consultar(recurso);
-					
-//					recurso.setBase("http://search.twitter.com");
-//					recurso.setPath("search.atom");
-					
-					String separador = "";
-					if (recurso.getBase().substring(recurso.getBase().length() - 1) != "/") {
-						separador = "/";
-					}
-	
-					aplicacaoRequest.setUrl(recurso.getBase() + separador + recurso.getPath());
-					aplicacaoRequest.setMetodo(recurso.getMetodo());
+					aplicacaoRequest.setUsuario(usuarioAplicacao.getUsuario());
+					aplicacaoRequest.setSenha(usuarioAplicacao.getSenha());
+
+					aplicacaoRequest.aplicaRecurso(usuarioAplicacao.getIdRecurso());
 				}
 	
 				String usuarioParam = request.getParameter("usuario");
@@ -361,21 +349,8 @@ public class MembroAplicacaoServlet extends HttpServlet {
 					aplicacaoRequest.setSenha(senhaParam);
 				}
 				
-				// Pegar parâmetros
-				List<Parametro> parametroLista = Parametro.consultarPorUsuarioAplicacao(usuarioAplicacao
-						.getIdUsuarioAplicacao());
-				
 				String[] arrParamValor = request.getParameter("arrParamValor").split(",");
-				
-				// Adicionar parâmetros para executor
-				aplicacaoRequest.getParametros().clear();
-				for (int i = 0; i < parametroLista.size(); i++) {
-					aplicacaoRequest.getParametros().add(
-							new NameValuePair(parametroLista.get(i).getName(),
-									arrParamValor[i]));
-				}
-				
-//				aplicacaoRequest.getParametros().add(new NameValuePair("q", "web"));
+				aplicacaoRequest.aplicaParametros(arrParamValor);
 	
 			} catch (Exception e) {
 				request.setAttribute("msg", "Não foi possível executar aplicação.");
