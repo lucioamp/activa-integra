@@ -2,6 +2,7 @@ package dao.integra;
 
 import interfaces.integra.UsuarioAplicacaoI;
 
+import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -81,8 +82,8 @@ public class UsuarioAplicacaoDAO implements UsuarioAplicacaoI {
 		try{
 			conn = ConnectionFactory.getInstance().getConnection();
 							
-			String sql = "insert into ae_usuario_aplicacao (pk_usuario,id_aplicacao,id_recurso,permissao,mostrar_janela,atualizacao_automatica,tempo_valor)";
-			sql += " values (?,?,?,?,?,?,?)";
+			String sql = "insert into ae_usuario_aplicacao (pk_usuario,id_aplicacao,id_recurso,permissao,mostrar_janela,atualizacao_automatica,tempo_valor,usuario,senha)";
+			sql += " values (?,?,?,?,?,?,?,?,?)";
 							
 			stmt = conn.prepareStatement(sql);
 			
@@ -105,6 +106,8 @@ public class UsuarioAplicacaoDAO implements UsuarioAplicacaoI {
 			else {
 				stmt.setNull(7, Types.INTEGER);
 			}
+			stmt.setString(8, usuarioAplicacao.getUsuario());
+			stmt.setString(9, usuarioAplicacao.getSenha());
 			
 			System.out.println(stmt);
 			stmt.executeUpdate();
@@ -146,7 +149,7 @@ public class UsuarioAplicacaoDAO implements UsuarioAplicacaoI {
 			conn = ConnectionFactory.getInstance().getConnection();
 							
 			String sql = "update ae_usuario_aplicacao set";
-			sql += " permissao = ?,mostrar_janela = ?,atualizacao_automatica = ?,tempo_valor = ?";
+			sql += " permissao = ?,mostrar_janela = ?,atualizacao_automatica = ?,tempo_valor = ?,usuario = ?,senha = ?";
 			sql += " where id_usuario_aplicacao = ?";
 							
 			stmt = conn.prepareStatement(sql);
@@ -167,8 +170,11 @@ public class UsuarioAplicacaoDAO implements UsuarioAplicacaoI {
 			else {
 				stmt.setNull(4, Types.INTEGER);
 			}
+			
+			stmt.setString(5, usuarioAplicacao.getUsuario());
+			stmt.setString(6, usuarioAplicacao.getSenha());
 
-			stmt.setLong(5, usuarioAplicacao.getIdUsuarioAplicacao());
+			stmt.setLong(7, usuarioAplicacao.getIdUsuarioAplicacao());
 			
 			System.out.println(stmt);
 			stmt.executeUpdate();
@@ -255,6 +261,75 @@ public class UsuarioAplicacaoDAO implements UsuarioAplicacaoI {
 		}
 		
 		return col;
+	}
+	
+	public String consultaCache(Long idUsuarioAplicacao) throws AplicacaoExternaException{
+		Blob retorno = null;
+		
+		try{
+			conn = ConnectionFactory.getInstance().getConnection();
+			String sql = "select conteudo";
+			sql += " from ae_usuario_aplicacao_cache";
+			sql += " where id_usuario_aplicacao = ?";
+		
+			stmt = conn.prepareStatement(sql);
+			
+			stmt.setLong(1, idUsuarioAplicacao);
+			
+			rs = stmt.executeQuery();
+			
+			while (rs.next()){
+				retorno = rs.getBlob("conteudo");
+			}
+		}catch (Exception e) {
+			throw new AplicacaoExternaException(e);
+		}finally{
+			ConnectionFactory.getInstance().closeConnection(rs, stmt, conn);
+		}
+		
+		if (retorno != null) {
+			byte[] bdata;
+			try {
+				bdata = retorno.getBytes(1, (int) retorno.length());
+				return new String(bdata);
+			} catch (SQLException e) {
+			}
+		}
+		
+		return "";
+	}
+	
+	public void atualizaCache(Long idUsuarioAplicacao, String conteudo) throws AplicacaoExternaException{
+		
+		try{
+			conn = ConnectionFactory.getInstance().getConnection();
+			String sql = "select *";
+			sql += " from ae_usuario_aplicacao_cache";
+			sql += " where id_usuario_aplicacao = ?";
+		
+			stmt = conn.prepareStatement(sql);
+			
+			stmt.setLong(1, idUsuarioAplicacao);
+			
+			rs = stmt.executeQuery();
+			
+			if (rs.next()){
+				sql = "update ae_usuario_aplicacao_cache set conteudo = ? where id_usuario_aplicacao = ?";
+			} else {
+				sql = "insert into ae_usuario_aplicacao_cache(conteudo, id_usuario_aplicacao) values(?, ?)";
+			}
+			
+			stmt = conn.prepareStatement(sql);
+			
+			stmt.setString(1,  conteudo);
+			stmt.setLong(2, idUsuarioAplicacao);
+			
+			stmt.executeUpdate();
+		}catch (Exception e) {
+			throw new AplicacaoExternaException(e);
+		}finally{
+			ConnectionFactory.getInstance().closeConnection(rs, stmt, conn);
+		}
 	}
 	
 	private void carregar(ResultSet rs, UsuarioAplicacao usuarioAplicacao) throws SQLException {

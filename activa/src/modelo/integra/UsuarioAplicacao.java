@@ -226,6 +226,14 @@ public class UsuarioAplicacao {
 	public static List<UsuarioAplicacao> consultarNotificacaoAutomatica(UsuarioAplicacao usuarioAplicacao) throws AplicacaoExternaException {
 		return getDAO().consultarNotificacaoAutomatica(usuarioAplicacao);
 	}
+	
+	public static String consultaCache(Long idUsuarioAplicacao) throws AplicacaoExternaException {
+		return getDAO().consultaCache(idUsuarioAplicacao);
+	}
+	
+	public static void atualizaCache(Long idUsuarioAplicacao, String conteudo) throws AplicacaoExternaException {
+		getDAO().atualizaCache(idUsuarioAplicacao, conteudo);
+	}
 
 	public String getUsuario() {
 		return usuario;

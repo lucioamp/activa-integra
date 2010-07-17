@@ -212,6 +212,8 @@ public class MembroAplicacaoServlet extends HttpServlet {
 			Boolean twoWay = Boolean.valueOf(request.getParameter("twoWay"));
 			Integer opcaoTwoWay = Integer.valueOf(request.getParameter("opcaoTwoWay"));
 			String tempoValor = (String) request.getParameter("tempoValor");
+			String usuarioParam = (String) request.getParameter("usuario");
+			String senha = (String) request.getParameter("senha");
 
 			UsuarioAplicacao usuarioAplicacao = new UsuarioAplicacao();
 			usuarioAplicacao.setPkUsuario(usuario.getPkUsuario());
@@ -219,6 +221,9 @@ public class MembroAplicacaoServlet extends HttpServlet {
 			usuarioAplicacao.setIdRecurso(idRecurso);
 			usuarioAplicacao.setPermissao(permissao);
 			usuarioAplicacao.setMostrarJanela(mostrarJanela);
+			usuarioAplicacao.setUsuario(usuarioParam);
+			usuarioAplicacao.setSenha(senha);
+			
 			if (twoWay) {
 				usuarioAplicacao.setAtualizacaoAutomatica(opcaoTwoWay);
 				

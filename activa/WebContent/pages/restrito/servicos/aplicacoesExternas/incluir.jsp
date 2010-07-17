@@ -31,6 +31,8 @@
 				var twoWay = $this.find('#twoWay');
 				var opcaoTwoWay = $this.find('#opcaoTwoWay:checked');
 				var tempoValor = $this.find('#tempoValor');
+				var usuario = $this.find('#usuario');
+				var senha = $this.find('#senha');
 				
 
 				var arrUsar = new Array();
@@ -55,7 +57,7 @@
 				$this.sendRequest('../../MembroAplicacaoServlet?opcao=A',
 					{idUsuarioAplicacao: idUsuarioAplicacao.val(), idAplicacao : idAplicacao.val(), idRecurso: idRecurso.val(), arrUsar: arrUsar.join(","), arrParamValor : arrParamValor.join(","), 
 					arrBloquear: arrBloquear.join(","), permissao: permissao.val(), mostrarJanela: mostrarJanela.val(), twoWay: twoWay.is(':checked'), 
-					opcaoTwoWay: opcaoTwoWay.val(), tempoValor: tempoValor.val()},
+					opcaoTwoWay: opcaoTwoWay.val(), tempoValor: tempoValor.val(), usuario: usuario.val(), senha: senha.val()},
 					function(data) {
 						var usuarioAplicacao = eval("(" + data + ')');
 						
@@ -89,6 +91,8 @@
 				out.print("var twoWay = $this.find('#twoWay');");
 				out.print("var opcaoTwoWay = $this.find('#opcaoTwoWay');");
 				out.print("var tempoValor = $this.find('#tempoValor');");
+				out.print("var usuario = $this.find('#usuario');");
+				out.print("var senha = $this.find('#senha');");
 				
 				out.print("permissao.filter('[value=" + usuarioAplicacao.getPermissao() + "]').attr('checked', true);");
 				out.print("mostrarJanela.val('" + usuarioAplicacao.getMostrarJanela() + "');");
@@ -98,6 +102,9 @@
 					out.print("opcaoTwoWay.filter('[value=" + usuarioAplicacao.getAtualizacaoAutomatica() + "]').attr('checked', true);");
 					out.print("tempoValor.val('" + usuarioAplicacao.getTempoValor() + "');");
 				}
+				
+				out.print("usuario.val('" + usuarioAplicacao.getUsuario() + "');");
+				out.print("senha.val('" + usuarioAplicacao.getSenha() + "');");
 			}
 			
 			// Recurso
@@ -177,42 +184,33 @@
 			<td colspan="3">&nbsp;</td>
 		</tr>
 		<tr>
-			<td colspan="2" width="70%">&nbsp;</td>
-			<td style="font-size: 12px;">
+			<td colspan="2" style="font-size: 12px;" valign="top">
 				<fieldset style="width:230px;">
 					<legend><span style="color: CornflowerBlue;">Permissão</span></legend>
 					<input id="permissao" name="permissao" type="radio" value="1" style=display:inline; checked/>Somente Usuário<br>
 					<input id="permissao" name="permissao" type="radio" value="2" style=display:inline;/>Compartilhado
 				</fieldset>
-			</td>
-		</tr>
-		<tr>
-			<td colspan="3">&nbsp;</td>
-		</tr>
-		<tr>
-			<td colspan="2">&nbsp;</td>
-			<td style="font-size: 12px;">
-				<fieldset style="width:230px;">
-					<legend><span style="color: CornflowerBlue;">Mostrar na Janela</span></legend>
-					<select id="mostrarJanela" style="width:220px;">
-						<option value=""></option>
-						<option value="Favoritos">Favoritos</option>
-					</select>
+				<fieldset style="width:230px;height:52px;">
+					<legend><span style="color: CornflowerBlue;">Autenticação</span></legend>
+					<span>Usuário:</span>&nbsp;<input type="text" id="usuario" style=display:inline;>
+					<br/> 
+					<span>Senha</span>:&nbsp;&nbsp;&nbsp;<input type="password" id="senha" style=display:inline;>
 				</fieldset>
 			</td>
-		</tr>
-		<tr>
-			<td colspan="3">&nbsp;</td>
-		</tr>
-		<tr>
-			<td colspan="2">&nbsp;</td>
-			<td style="font-size: 12px;">
+			<td style="font-size: 12px;" valign="top">
 				<fieldset style="width:230px;">
 					<legend><span style="color: CornflowerBlue;">Habilitação Automática dos Dados</span></legend>
 					<input type=checkbox id=twoWay style=display:inline;/>Habilitar Two-Way<br>
 					&nbsp;&nbsp;&nbsp;<input id="opcaoTwoWay" name="opcaoTwoWay" type="radio" value="1" style=display:inline; checked/>Tempo
 						&nbsp;<input type=text id=tempoValor style=width:60px;display:inline;/>&nbsp;<i>minutos</i><br>
 					&nbsp;&nbsp;&nbsp;<input id="opcaoTwoWay" name="opcaoTwoWay" type="radio" value="2" style=display:inline;/>Novos Dados
+				</fieldset>
+				<fieldset style="width:230px;">
+					<legend><span style="color: CornflowerBlue;">Mostrar na Janela</span></legend>
+					<select id="mostrarJanela" style="width:220px;">
+						<option value=""></option>
+						<option value="Favoritos">Favoritos</option>
+					</select>
 				</fieldset>
 			</td>
 		</tr>

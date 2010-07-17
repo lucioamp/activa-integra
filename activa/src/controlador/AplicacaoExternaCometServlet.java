@@ -183,11 +183,6 @@ public class AplicacaoExternaCometServlet extends HttpServlet implements CometPr
 			} catch (AplicacaoExternaException e) {
 				e.printStackTrace();
 			}
-//			aplicacaoRequest.setUrl("https://api.del.icio.us/v1/posts/all");
-//			aplicacaoRequest.setMetodo("GET");
-//			aplicacaoRequest.setUsuario("lucioamp");
-//			aplicacaoRequest.setSenha("7321007a");
-//			aplicacaoRequest.getParametros().add(new NameValuePair("results", "1"));
 		}
 
 		public void run() {
@@ -198,13 +193,13 @@ public class AplicacaoExternaCometServlet extends HttpServlet implements CometPr
 				String conteudoAtual = "Aplica&ccedil;&atilde;o [" + aplicacaoRequest.getNomeAplicacao() + " - "
 					+ aplicacaoRequest.getNomeRecurso() + "] retornou novos dados:<br/><br/>" + resultado[1];
 				
-				String conteudoAnterior = (String) session.getAttribute(String.valueOf(aplicacaoRequest.getIdUsuarioAplicacao()));
+				String conteudoAnterior = UsuarioAplicacao.consultaCache(aplicacaoRequest.getIdUsuarioAplicacao());
 				
 				String conteudoFinal = "";
 				if (!conteudoAtual.equals(conteudoAnterior)) {
 					conteudoFinal = conteudoAtual;
 					
-					session.setAttribute(String.valueOf(aplicacaoRequest.getIdUsuarioAplicacao()), conteudoFinal);
+					UsuarioAplicacao.atualizaCache(aplicacaoRequest.getIdUsuarioAplicacao(), conteudoFinal);
 				}
 				
 				Thread.sleep(30000L);
