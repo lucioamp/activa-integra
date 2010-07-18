@@ -140,6 +140,9 @@ public class AplicacaoExternaDAO implements AplicacaoExternaI {
 		aplicacao.setIdAplicacao(rs.getLong("id_aplicacao"));
 		aplicacao.setNome(rs.getString("nome"));
 		aplicacao.setUrl(rs.getString("url"));
+		aplicacao.setAuthBasica(rs.getInt("auth_basica") == 1 ? true : false);
+		aplicacao.setAuthOpenId(rs.getInt("auth_openid") == 1 ? true : false);
+		aplicacao.setAuthGAuth(rs.getInt("auth_gauth") == 1 ? true : false);
 	}
 
 }

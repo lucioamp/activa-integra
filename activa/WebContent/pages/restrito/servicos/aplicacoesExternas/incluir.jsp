@@ -103,8 +103,13 @@
 					out.print("tempoValor.val('" + usuarioAplicacao.getTempoValor() + "');");
 				}
 				
-				out.print("usuario.val('" + usuarioAplicacao.getUsuario() + "');");
-				out.print("senha.val('" + usuarioAplicacao.getSenha() + "');");
+				if (aplicacao.isAuthBasica()) {
+					out.print("usuario.val('" + usuarioAplicacao.getUsuario() + "');");
+					out.print("senha.val('" + usuarioAplicacao.getSenha() + "');");
+				} else {
+					out.print("usuario.attr('disabled', true);");
+					out.print("senha.attr('disabled', true);");
+				}
 			}
 			
 			// Recurso
