@@ -143,8 +143,12 @@ public class ExecutorAplicacao {
 				responseBodyAsString = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?><resultado>" + XML.toString(obj)
 						+ "</resultado>";
 			} else if (responseBodyAsString.startsWith("<?xml")) {
+				String xmlString = responseBodyAsString.replace("UTF-8", "iso-8859-1").replaceAll("\\n", "");
+				// Tira os espaços entre as tags
+				xmlString = xmlString.replaceAll("[\\s]+<", "<");
+				
 				StringWriter xmlBuffer = new StringWriter();
-				xmlBuffer.write(responseBodyAsString.replace("UTF-8", "iso-8859-1").replaceAll("\\n", ""));
+				xmlBuffer.write(xmlString);
 
 				ByteArrayInputStream xmlParseInputStream = new ByteArrayInputStream(xmlBuffer.toString().getBytes());
 
@@ -210,5 +214,5 @@ public class ExecutorAplicacao {
 				removeAll(list.item(i), nodeType, name);
 			}
 		}
-	} 
+	}
 }

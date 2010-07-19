@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletResponse;
@@ -29,6 +31,8 @@ public class AplicacaoExternaCometServlet extends HttpServlet implements CometPr
 	private static final Integer TIMEOUT = 30 * 60 * 1000;
 	
 	private HttpSession session;
+	
+	private List<Timer> executorLista = new ArrayList<Timer>();
 
 	@Override
 	public void destroy() {
@@ -77,19 +81,27 @@ public class AplicacaoExternaCometServlet extends HttpServlet implements CometPr
 
 			messageSender.setConnection(response);
 			
-			// TODO - Tem que parar todas as threads ativas de executor
-			
 			Usuario usuario = (Usuario) session.getAttribute("membro");
 			if (usuario != null) {
 				UsuarioAplicacao usuarioAplicacaoReq = new UsuarioAplicacao();
 				usuarioAplicacaoReq.setPkUsuario(usuario.getPkUsuario());
+				
+				// Parar as threads iniciadas
+				for (Timer timer : executorLista) {
+					timer.cancel();
+				}
 
+				executorLista.clear();
 				try {
 					List<UsuarioAplicacao> usuarioAplicacaoLista = UsuarioAplicacao
 							.consultarNotificacaoAutomatica(usuarioAplicacaoReq);
 					for (UsuarioAplicacao usuarioAplicacao : usuarioAplicacaoLista) {
 						Executor executor = new Executor(usuarioAplicacao);
-						new Thread(executor).start();
+						
+						Timer timer = new Timer(true);
+						timer.schedule(executor, 0, 30000);
+						
+						executorLista.add(timer);
 					}
 				} catch (AplicacaoExternaException e) {
 					e.printStackTrace();
@@ -169,7 +181,7 @@ public class AplicacaoExternaCometServlet extends HttpServlet implements CometPr
 		}
 	}
 
-	private class Executor implements Runnable {
+	private class Executor extends TimerTask {
 		private ExecutorAplicacaoRequest aplicacaoRequest = new ExecutorAplicacaoRequest();
 		
 		public Executor(UsuarioAplicacao usuarioAplicacao) {
@@ -200,11 +212,9 @@ public class AplicacaoExternaCometServlet extends HttpServlet implements CometPr
 					conteudoFinal = conteudoAtual;
 					
 					UsuarioAplicacao.atualizaCache(aplicacaoRequest.getIdUsuarioAplicacao(), conteudoFinal);
+					
+					messageSender.send(conteudoFinal);
 				}
-				
-				Thread.sleep(30000L);
-				
-				messageSender.send(conteudoFinal);
 			} catch (Exception e) {
 				log("Erro: " + e.getMessage());
 			}

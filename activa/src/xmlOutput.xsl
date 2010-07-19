@@ -66,7 +66,7 @@ instruction below. This is recommended if you are a beginner.
     <xsl:call-template name="ascii-art-hierarchy"/>
     <br/>
     <xsl:call-template name="ascii-art-hierarchy"/>
-    <span class='connector'>___</span>
+    <span class='connector'>   </span>
     <!-- <span class="element">element</span> -->
     <xsl:text>&#160;</xsl:text>
 
@@ -96,7 +96,7 @@ instruction below. This is recommended if you are a beginner.
         <xsl:sort select="name()"/>
         <xsl:call-template name="ascii-art-hierarchy"/>
         <span class='connector'>&#160;&#160;</span>
-        <span class='connector'>\___</span>
+        <span class='connector'>.</span>
 
         <!-- <span class="namespace">namespace</span> -->
         <xsl:text>&#160;</xsl:text>
@@ -123,7 +123,7 @@ instruction below. This is recommended if you are a beginner.
   <xsl:template match="@*" mode="render">
     <xsl:call-template name="ascii-art-hierarchy"/>
     <span class='connector'>&#160;&#160;</span>
-    <span class='connector'>\___</span>
+    <span class='connector'>.</span>
 
     <!-- <span class="attribute">attribute</span> -->
     <xsl:text>&#160;</xsl:text>
@@ -162,7 +162,7 @@ instruction below. This is recommended if you are a beginner.
     <br/>
 
     <xsl:call-template name="ascii-art-hierarchy"/>
-    <span class='connector'>___</span>
+    <span class='connector'>   </span>
     <!-- <span class="text">text</span> -->
     <xsl:text>&#160;</xsl:text>
     <span class="value">
@@ -180,7 +180,7 @@ instruction below. This is recommended if you are a beginner.
     <br/>
     <xsl:call-template name="ascii-art-hierarchy"/>
 
-    <span class='connector'>___</span>
+    <span class='connector'>   </span>
     <!-- <span class="comment">comment</span> -->
     <xsl:text>&#160;</xsl:text>
     <span class="value">
@@ -197,7 +197,7 @@ instruction below. This is recommended if you are a beginner.
     <xsl:call-template name="ascii-art-hierarchy"/>
     <br/>
     <xsl:call-template name="ascii-art-hierarchy"/>
-    <span class='connector'>___</span>
+    <span class='connector'>   </span>
 
     <span class="pi">processing instruction</span>
     <xsl:text>&#160;</xsl:text>
@@ -218,7 +218,7 @@ instruction below. This is recommended if you are a beginner.
       <xsl:choose>
 
         <xsl:when test="following-sibling::node()">
-          <span class='connector'>&#160;&#160;</span>|<span class='connector'>&#160;&#160;</span>
+          <span class='connector'>&#160;&#160;</span><span class='connector'>&#160;&#160;</span>
           <xsl:text>&#160;</xsl:text>
         </xsl:when>
         <xsl:otherwise>
@@ -231,7 +231,7 @@ instruction below. This is recommended if you are a beginner.
     <xsl:choose>
       <xsl:when test="parent::node() and ../child::node()">
         <span class='connector'>&#160;&#160;</span>
-        <xsl:text>|</xsl:text>
+        <xsl:text></xsl:text>
       </xsl:when>
       <xsl:otherwise>
 
