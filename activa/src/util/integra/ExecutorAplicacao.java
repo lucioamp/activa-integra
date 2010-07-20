@@ -171,7 +171,7 @@ public class ExecutorAplicacao {
 				transformer.transform(source, new StreamResult(byte1));
 
 				retorno = byte1.toString();
-			} else if (responseBodyAsString.indexOf("<feed") > -1) {
+			} else if (responseBodyAsString.indexOf("<feed") > -1 || responseBodyAsString.indexOf("<rss") > -1) {
 				StringWriter xmlBuffer = new StringWriter();
 				xmlBuffer.write(responseBodyAsString);
 				ByteArrayInputStream xmlParseInputStream = new ByteArrayInputStream(xmlBuffer.toString().getBytes());
