@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
+import java.net.URLEncoder;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -31,6 +32,7 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.XML;
@@ -137,40 +139,21 @@ public class ExecutorAplicacao {
 		String retorno = "";
 		
 		try {
-			// JSON - Converte para XML
+			// JSON
 			if (responseBodyAsString.startsWith("{")) {
 				JSONObject obj = new JSONObject(responseBodyAsString);
-				responseBodyAsString = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?><resultado>" + XML.toString(obj)
+				String xmlString = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?><resultado>" + XML.toString(obj)
 						+ "</resultado>";
+				
+				retorno = xmlParaHtml(xmlString);
+			// XML
 			} else if (responseBodyAsString.startsWith("<?xml")) {
 				String xmlString = responseBodyAsString.replace("UTF-8", "iso-8859-1").replaceAll("\\n", "");
 				// Tira os espaços entre as tags
-				xmlString = xmlString.replaceAll("[\\s]+<", "<");
-				
-				StringWriter xmlBuffer = new StringWriter();
-				xmlBuffer.write(xmlString);
+				xmlString = xmlString.replaceAll("[\\s]+<", "<");				
 
-				ByteArrayInputStream xmlParseInputStream = new ByteArrayInputStream(xmlBuffer.toString().getBytes());
-
-				DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-				DocumentBuilder builder = factory.newDocumentBuilder();
-				Document document = builder.parse(xmlParseInputStream);
-
-				// Remove os comentários
-				removeAll(document, Node.COMMENT_NODE, null);
-				
-		        Source source = new DOMSource(document);
-		        
-				TransformerFactory tFactory = TransformerFactory.newInstance();
-				InputStream xslInput = getClass().getResourceAsStream("/xmlOutput.xsl");
-
-				Transformer transformer = tFactory.newTransformer(new StreamSource(xslInput));
-
-				ByteArrayOutputStream byte1 = new ByteArrayOutputStream();
-
-				transformer.transform(source, new StreamResult(byte1));
-
-				retorno = byte1.toString();
+				retorno = xmlParaHtml(xmlString);
+			// RSS
 			} else if (responseBodyAsString.indexOf("<feed") > -1 || responseBodyAsString.indexOf("<rss") > -1) {
 				StringWriter xmlBuffer = new StringWriter();
 				xmlBuffer.write(responseBodyAsString);
@@ -188,6 +171,39 @@ public class ExecutorAplicacao {
 		}
 
 		return retorno;
+	}
+	
+	private String xmlParaHtml(String xmlString) {
+		StringWriter xmlBuffer = new StringWriter();
+		xmlBuffer.write(xmlString);
+
+		ByteArrayInputStream xmlParseInputStream = new ByteArrayInputStream(xmlBuffer.toString().getBytes());
+
+		try {
+			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder builder = factory.newDocumentBuilder();
+			Document document = builder.parse(xmlParseInputStream);
+	
+			// Remove os comentários
+			removeAll(document, Node.COMMENT_NODE, null);
+			
+	        Source source = new DOMSource(document);
+	        
+			TransformerFactory tFactory = TransformerFactory.newInstance();
+			InputStream xslInput = getClass().getResourceAsStream("/xmlOutput.xsl");
+	
+			Transformer transformer = tFactory.newTransformer(new StreamSource(xslInput));
+	
+			ByteArrayOutputStream byte1 = new ByteArrayOutputStream();
+		
+			transformer.transform(source, new StreamResult(byte1));
+			
+			return byte1.toString();
+		} catch (Exception e) {
+			
+		}
+
+		return "<span style='color:red;'>Erro ao converter para HTML.</span>";
 	}
 	
 	private String entryToHtml(SyndEntry entry) {

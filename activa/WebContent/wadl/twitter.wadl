@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<application xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://research.sun.com/wadl/2006/10 wadl.xsd" xmlns="http://research.sun.com/wadl/2006/10">
+<resources base="http://search.twitter.com/">
+<resource path="search.json">
+<method name="GET">
+<request>
+<param name="q" type="xsd:string" style="query">
+<doc xml:lang="en" title="q (Sample Value: neuro)">Estimated Type (supposed): [xsd:string]</doc>
+</param>
+<param name="rpp" type="xsd:integer" style="query">
+<doc xml:lang="en" title="rpp (Sample Value: 5)">Estimated Type (sure): [xsd:integer]</doc>
+</param>
+<param name="result_type" type="xsd:string" style="query">
+<doc xml:lang="en" title="result_type (Sample Value: recent)">Estimated Type (supposed): [xsd:string]</doc>
+</param>
+</request>
+</method>
+</resource>
+</resources>
+</application>

@@ -173,7 +173,7 @@
 	<thead>
 		<tr>
 			<td width="50">URL:</td>
-			<td><input type="text" name=url id="url" style="width: 500px;" value="http://localhost:8080/activa/wadl/delicious.wadl"/></td>
+			<td><input type="text" name=url id="url" style="width: 500px;" value="http://localhost:8080/activa/wadl/[nome].wadl"/></td>
 			<td>&nbsp;</td>
 		</tr>
 		<tr>
@@ -196,7 +196,7 @@
 		</tr>
 		<tr>
 			<td colspan="3">Nome da Aplicação: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  
-				<input type="text" name="nome" id="nome" style="width: 300px; display:inline;" value="Teste"/>
+				<input type="text" name="nome" id="nome" style="width: 300px; display:inline;" value=""/>
 			</td>
 		</tr>
 		<tr>
