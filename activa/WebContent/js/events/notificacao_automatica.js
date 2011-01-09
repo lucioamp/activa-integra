@@ -11,7 +11,7 @@ var notificacaoDialog = function()
 			
 			notificacao.showDialog({
 				minimize: false,
-				maximize: false,
+				maximize: true,
 				modal: false,
 				showCloseButton: false,
 				show: 'fold',
@@ -21,7 +21,10 @@ var notificacaoDialog = function()
 				resizable: true,
 				draggable: true,
 				reload: false,
-				posTop: 0
+				posTop: 0,
+				height: 500,
+				maxHeight: true,
+				minHeight: 100
 			});				
 			
 			return this;

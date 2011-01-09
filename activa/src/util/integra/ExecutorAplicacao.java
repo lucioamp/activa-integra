@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
-import java.net.URLEncoder;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -32,7 +32,6 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.utils.URLEncodedUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.XML;
@@ -146,13 +145,6 @@ public class ExecutorAplicacao {
 						+ "</resultado>";
 				
 				retorno = xmlParaHtml(xmlString);
-			// XML
-			} else if (responseBodyAsString.startsWith("<?xml")) {
-				String xmlString = responseBodyAsString.replace("UTF-8", "iso-8859-1").replaceAll("\\n", "");
-				// Tira os espaços entre as tags
-				xmlString = xmlString.replaceAll("[\\s]+<", "<");				
-
-				retorno = xmlParaHtml(xmlString);
 			// RSS
 			} else if (responseBodyAsString.indexOf("<feed") > -1 || responseBodyAsString.indexOf("<rss") > -1) {
 				StringWriter xmlBuffer = new StringWriter();
@@ -161,8 +153,18 @@ public class ExecutorAplicacao {
 
 				SyndFeedInput input = new SyndFeedInput();
 				SyndFeed feed = input.build(new InputStreamReader(xmlParseInputStream));
-				SyndEntry entry = (SyndEntry) feed.getEntries().get(0);
-				retorno = entryToHtml(entry);
+				
+				List<SyndEntry> entriesList = feed.getEntries();
+				for (SyndEntry entry : entriesList) {					
+					retorno += entryToHtml(entry) + "<br/>";
+				}											
+			// XML
+			} else if (responseBodyAsString.startsWith("<?xml")) {
+				String xmlString = responseBodyAsString.replace("UTF-8", "iso-8859-1").replaceAll("\\n", "");
+				// Tira os espaços entre as tags
+				xmlString = xmlString.replaceAll("[\\s]+<", "<");				
+
+				retorno = xmlParaHtml(xmlString);
 			} else {
 				retorno = responseBodyAsString;
 			}
@@ -210,7 +212,7 @@ public class ExecutorAplicacao {
 		StringBuilder html = new StringBuilder("<h2>");
 		html.append(entry.getTitle());
 		html.append("</h2>");
-		html.append(((SyndContentImpl) entry.getContents().get(0)).getValue());
+		html.append(((SyndContentImpl) entry.getTitleEx()).getValue()); //entry.getContents().get(0)
 		return html.toString();
 	}
 

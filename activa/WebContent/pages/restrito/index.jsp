@@ -164,9 +164,10 @@
 </div>
 
 <div id="notificacao" style="display: none;">
-	<div id="notificacaoConteudo"></div>
-	<br/><button type="button" class="ui-state-default ui-corner-all"
+	<button type="button" class="ui-state-default ui-corner-all"
 				name="limparNotificacao" id="limparNotificacao">Limpar Aviso</button>
+	<br/><br/>
+	<div id="notificacaoConteudo"></div>
 </div>
 
 </body>
