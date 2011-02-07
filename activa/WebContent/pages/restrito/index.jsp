@@ -103,7 +103,7 @@
 						}
 						
 						if(!Membro.isProfessor(usuario))
-							out.print("menuOptionConteudo.find('a[href=\"#NOVO_AMBIENTE\"]').hide()");
+							out.print("menuOptionConteudo.find('a[href=\"#NOVO_AMBIENTE\"]').hide();");
 						
 						// Notificações automáticas
 						out.print("executaReverseAjax();");

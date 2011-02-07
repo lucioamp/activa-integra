@@ -125,11 +125,13 @@
 					indexAuth ++;
 				}
 
+				/*
 				if(indexAuth == 0)
 				{
 					$this.alert('Por favor, escolha pelo menos uma forma de autenticação.', null, null);
 					return false;
 				}
+				*/
 
 				var recursoTitulo = $this.find('#recursoTitulo');
 				
