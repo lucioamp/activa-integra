@@ -59,9 +59,13 @@ var executaReverseAjax = function()
 			    }
             }
             
-            executaReverseAjax();
+            //executaReverseAjax();
 	  	}
+		
+		//alert(request.readyState);
 	};
 	
 	request.send(null);
+	
+	window.setTimeout('executaReverseAjax()', 60000);
 };

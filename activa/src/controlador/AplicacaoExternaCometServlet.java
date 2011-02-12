@@ -78,6 +78,17 @@ public class AplicacaoExternaCometServlet extends HttpServlet implements CometPr
 
 		if (event.getEventType() == CometEvent.EventType.BEGIN) {
 			request.setAttribute("org.apache.tomcat.comet.timeout", TIMEOUT);
+			
+			/*
+			// Intervalo entre execuções
+			try {
+				synchronized(Thread.currentThread()){
+					Thread.currentThread().wait(5000);		
+				}
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
+			*/
 
 			messageSender.setConnection(response);
 			
