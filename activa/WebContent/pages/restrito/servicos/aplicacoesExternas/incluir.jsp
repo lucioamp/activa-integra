@@ -167,7 +167,7 @@
 		};
 	});
 </script>	
-<div id="title">Aplicações Externas - Editar Mashup</div>
+<div id="title">Aplicações Externas - Editar Configuração</div>
 <input type="hidden" id="idUsuarioAplicacao">
 <input type="hidden" id="idAplicacao">
 <input type="hidden" id="idRecurso">
@@ -204,11 +204,10 @@
 			</td>
 			<td style="font-size: 12px;" valign="top">
 				<fieldset style="width:230px;">
-					<legend><span style="color: CornflowerBlue;">Habilitação Automática dos Dados</span></legend>
-					<input type=checkbox id=twoWay style=display:inline;/>Habilitar Two-Way<br>
-					&nbsp;&nbsp;&nbsp;<input id="opcaoTwoWay" name="opcaoTwoWay" type="radio" value="1" style=display:inline; checked/>Tempo
-						&nbsp;<input type=text id=tempoValor style=width:60px;display:inline;/>&nbsp;<i>minutos</i><br>
-					&nbsp;&nbsp;&nbsp;<input id="opcaoTwoWay" name="opcaoTwoWay" type="radio" value="2" style=display:inline;/>Novos Dados
+					<legend><span style="color: CornflowerBlue;"><input type=checkbox id=twoWay style=display:inline;/> Notificação Automática</span></legend>
+					<input id="opcaoTwoWay" name="opcaoTwoWay" type="radio" value="1" style=display:inline; disabled="disabled"/>Tempo
+					<input type=text id=tempoValor style=width:60px;display:inline; disabled="disabled"/>&nbsp;<i>minutos</i><br>
+					<input id="opcaoTwoWay" name="opcaoTwoWay" type="radio" value="2" style=display:inline; checked/>Novos Dados
 				</fieldset>
 				<fieldset style="width:230px;">
 					<legend><span style="color: CornflowerBlue;">Mostrar na Janela</span></legend>

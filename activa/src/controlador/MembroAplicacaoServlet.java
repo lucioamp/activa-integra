@@ -272,7 +272,7 @@ public class MembroAplicacaoServlet extends HttpServlet {
 					}
 				}
 
-				usuarioAplicacao.setMensagem("Edição do Mashup realizada com sucesso.");
+				usuarioAplicacao.setMensagem("Edição da Configuração realizada com sucesso.");
 
 			} catch (Exception e) {
 				usuarioAplicacao.setMensagem("Não foi possível atualizar os dados.");

@@ -60,9 +60,7 @@ var executaReverseAjax = function()
             }
             
             //executaReverseAjax();
-	  	}
-		
-		//alert(request.readyState);
+	  	}	
 	};
 	
 	request.send(null);
