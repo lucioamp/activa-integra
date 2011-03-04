@@ -234,6 +234,10 @@ public class UsuarioAplicacao {
 	public static void atualizaCache(Long idUsuarioAplicacao, String conteudo) throws AplicacaoExternaException {
 		getDAO().atualizaCache(idUsuarioAplicacao, conteudo);
 	}
+	
+	public static void incluirLog(Long idUsuarioAplicacao, String retorno) throws AplicacaoExternaException {
+		getDAO().incluirLog(idUsuarioAplicacao, retorno);
+	}
 
 	public String getUsuario() {
 		return usuario;

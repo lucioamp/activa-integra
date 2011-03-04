@@ -346,4 +346,28 @@ public class UsuarioAplicacaoDAO implements UsuarioAplicacaoI {
 		usuarioAplicacao.setUsuario(rs.getString("usuario"));
 		usuarioAplicacao.setSenha(rs.getString("senha"));
 	}
+	
+	public long incluirLog (Long idUsuarioAplicacao, String retorno) throws AplicacaoExternaException{
+		try{
+			conn = ConnectionFactory.getInstance().getConnection();
+							
+			String sql = "insert into ae_usuario_aplicacao_log (id_usuario_aplicacao, retorno, data)";
+			sql += " values (?,?,sysdate())";
+							
+			stmt = conn.prepareStatement(sql);
+			
+			stmt.setLong(1, idUsuarioAplicacao);
+			stmt.setString(2, retorno);
+						
+			System.out.println(stmt);
+			stmt.executeUpdate();
+			
+		}catch (Exception e) {
+			throw new AplicacaoExternaException(e);
+		}finally{
+			ConnectionFactory.getInstance().closeConnection(rs, stmt, conn);
+		}
+		
+		return getIDUsuarioAplicacao();
+	}
 }

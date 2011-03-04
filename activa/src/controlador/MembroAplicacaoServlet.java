@@ -22,6 +22,7 @@ import modelo.integra.UsuarioAplicacaoParametro;
 
 import org.apache.http.HttpStatus;
 
+import util.AplicacaoExternaException;
 import util.integra.ExecutorAplicacao;
 
 /**
@@ -371,6 +372,12 @@ public class MembroAplicacaoServlet extends HttpServlet {
 				request.setAttribute("msg", "login");
 			} else {
 				request.setAttribute("msg", resultado[1]);
+								
+				try {
+					UsuarioAplicacao.incluirLog(aplicacaoRequest.getIdUsuarioAplicacao(), resultado[1]);
+				} catch (AplicacaoExternaException e) {
+					e.printStackTrace();
+				}
 			}
 
 			// Atualiza na lista da sessão

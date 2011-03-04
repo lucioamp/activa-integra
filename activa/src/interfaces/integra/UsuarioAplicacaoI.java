@@ -17,4 +17,5 @@ public interface UsuarioAplicacaoI {
 	public List<UsuarioAplicacao> consultarNotificacaoAutomatica(UsuarioAplicacao usuarioAplicacao) throws AplicacaoExternaException;
 	public String consultaCache(Long idUsuarioAplicacao) throws AplicacaoExternaException;
 	public void atualizaCache(Long idUsuarioAplicacao, String conteudo) throws AplicacaoExternaException;
+	public long incluirLog (Long idUsuarioAplicacao, String retorno) throws AplicacaoExternaException;
 }

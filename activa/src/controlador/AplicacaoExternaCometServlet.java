@@ -23,6 +23,7 @@ import org.apache.catalina.CometProcessor;
 
 import util.AplicacaoExternaException;
 import util.integra.ExecutorAplicacao;
+import util.integra.Helper;
 
 public class AplicacaoExternaCometServlet extends HttpServlet implements CometProcessor {
 	private static final long serialVersionUID = 719792464317818148L;
@@ -219,10 +220,12 @@ public class AplicacaoExternaCometServlet extends HttpServlet implements CometPr
 				String conteudoAnterior = UsuarioAplicacao.consultaCache(aplicacaoRequest.getIdUsuarioAplicacao());
 				
 				String conteudoFinal = "";
-				if (!conteudoAtual.equals(conteudoAnterior)) {
+				// verificando se houve alteração 
+				if (!Helper.truncate(conteudoAtual, 10000).equals(Helper.truncate(conteudoAnterior, 10000))) {
 					conteudoFinal = conteudoAtual;
 					
 					UsuarioAplicacao.atualizaCache(aplicacaoRequest.getIdUsuarioAplicacao(), conteudoFinal);
+					UsuarioAplicacao.incluirLog(aplicacaoRequest.getIdUsuarioAplicacao(), conteudoFinal);
 					
 					messageSender.send(conteudoFinal);
 				}
