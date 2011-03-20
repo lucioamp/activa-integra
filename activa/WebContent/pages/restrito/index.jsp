@@ -167,7 +167,9 @@
 	<button type="button" class="ui-state-default ui-corner-all"
 				name="limparNotificacao" id="limparNotificacao">Limpar Aviso</button>
 	<br/><br/>
+	<font color="#0080C0">
 	<div id="notificacaoConteudo"></div>
+	</font>
 </div>
 
 </body>

@@ -31,6 +31,7 @@ import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.http.HttpStatus;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -65,7 +66,7 @@ public class ExecutorAplicacao {
 		}
 	};
 
-	public String[] executaAplicação(ExecutorAplicacaoRequest request) {
+	public String[] executaAplicação(ExecutorAplicacaoRequest request) throws HttpException, IOException {
 		String[] response = new String[2];
 		
 		HttpClient client = new HttpClient();
@@ -79,7 +80,7 @@ public class ExecutorAplicacao {
 		
 //		client.getHostConfiguration().setProxy("proxy.houston.hp.com", 8080);
 		
-		try {
+		//try {
 			if (request.getMetodo().equals("POST")) {
 				PostMethod method = new PostMethod(request.getUrl());
 				method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, myretryhandler);
@@ -123,13 +124,11 @@ public class ExecutorAplicacao {
 
 				// Libera a conexão
 				method.releaseConnection();
-			}
-		} catch (HttpException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-			response[1] = "<span style='color:red;'>" + e.toString() + "</span>";
-		}
+			}		
+		//} catch (IOException e) {
+		//	e.printStackTrace();
+		//	response[1] = "<span style='color:red;'>" + e.toString() + "</span>";
+		//}
 		
 		return response;
 	}
@@ -209,10 +208,13 @@ public class ExecutorAplicacao {
 	}
 	
 	private String entryToHtml(SyndEntry entry) {
-		StringBuilder html = new StringBuilder("<h2>");
-		html.append(entry.getTitle());
-		html.append("</h2>");
-		html.append(((SyndContentImpl) entry.getTitleEx()).getValue()); //entry.getContents().get(0)
+		StringBuilder html = new StringBuilder();
+		//StringBuilder html = new StringBuilder("<h2>");
+		//html.append(entry.getTitle());
+		//html.append("</h2>");
+		String texto = ((SyndContentImpl) entry.getTitleEx()).getValue();
+			
+		html.append(StringEscapeUtils.escapeHtml(texto)); //entry.getContents().get(0)
 		return html.toString();
 	}
 

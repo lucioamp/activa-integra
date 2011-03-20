@@ -58,7 +58,34 @@ public class AplicacaoExternaCometServlet extends HttpServlet implements CometPr
 	 */
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		log("Caiu no lugar errado!");
+		session = request.getSession(true);
+		
+		Usuario usuario = (Usuario) session.getAttribute("membro");
+		if (usuario != null) {
+			UsuarioAplicacao usuarioAplicacaoReq = new UsuarioAplicacao();
+			usuarioAplicacaoReq.setPkUsuario(usuario.getPkUsuario());
+			
+			try {
+				List<UsuarioAplicacao> usuarioAplicacaoLista = UsuarioAplicacao
+						.consultarNotificacaoAutomatica(usuarioAplicacaoReq);
+				for (UsuarioAplicacao usuarioAplicacao : usuarioAplicacaoLista) {
+					Executor executor = new Executor(usuarioAplicacao);
+					
+					String conteudoFinal = executor.executarAplicacao();
+					if (conteudoFinal != null && conteudoFinal != "") {
+						PrintWriter writer = response.getWriter();
+						writer.println(conteudoFinal);
+						log("Writing:" + conteudoFinal);
+						writer.flush();
+						writer.close();
+						
+						return;
+					}								
+				}
+			} catch (AplicacaoExternaException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	/**
@@ -68,30 +95,20 @@ public class AplicacaoExternaCometServlet extends HttpServlet implements CometPr
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,
 			IOException {
+		
 	}
 
 	@Override
 	public void event(CometEvent event) throws IOException, ServletException {
 		HttpServletRequest request = event.getHttpServletRequest();
-		HttpServletResponse response = event.getHttpServletResponse();
-		
-		session = request.getSession(true);
+		HttpServletResponse response = event.getHttpServletResponse();		
 
 		if (event.getEventType() == CometEvent.EventType.BEGIN) {
-			request.setAttribute("org.apache.tomcat.comet.timeout", TIMEOUT);
-			
-			/*
-			// Intervalo entre execuções
-			try {
-				synchronized(Thread.currentThread()){
-					Thread.currentThread().wait(5000);		
-				}
-			} catch (InterruptedException e1) {
-				e1.printStackTrace();
-			}
-			*/
+			request.setAttribute("org.apache.tomcat.comet.timeout", TIMEOUT);		
 
 			messageSender.setConnection(response);
+			
+			session = request.getSession(true);
 			
 			Usuario usuario = (Usuario) session.getAttribute("membro");
 			if (usuario != null) {
@@ -113,7 +130,7 @@ public class AplicacaoExternaCometServlet extends HttpServlet implements CometPr
 						Timer timer = new Timer(true);
 						timer.schedule(executor, 0, 30000);
 						
-						executorLista.add(timer);
+						executorLista.add(timer);						
 					}
 				} catch (AplicacaoExternaException e) {
 					e.printStackTrace();
@@ -126,7 +143,6 @@ public class AplicacaoExternaCometServlet extends HttpServlet implements CometPr
 		} else if (event.getEventType() == CometEvent.EventType.READ) {
 			throw new UnsupportedOperationException("This servlet does not accept data");
 		}
-
 	}
 
 	private class MessageSender implements Runnable {
@@ -209,7 +225,16 @@ public class AplicacaoExternaCometServlet extends HttpServlet implements CometPr
 			}
 		}
 
-		public void run() {
+		public void run() {			
+			String conteudoFinal = executarAplicacao();
+			if (conteudoFinal != null && conteudoFinal != "") {
+				messageSender.send(conteudoFinal);
+			}
+		}
+		
+		public String executarAplicacao() {
+			String conteudoFinal = "";
+			
 			try {
 				ExecutorAplicacao executor = new ExecutorAplicacao();
 				String[] resultado = executor.executaAplicação(aplicacaoRequest);
@@ -218,20 +243,19 @@ public class AplicacaoExternaCometServlet extends HttpServlet implements CometPr
 					+ aplicacaoRequest.getNomeRecurso() + "] retornou novos dados:<br/><br/>" + resultado[1];
 				
 				String conteudoAnterior = UsuarioAplicacao.consultaCache(aplicacaoRequest.getIdUsuarioAplicacao());
-				
-				String conteudoFinal = "";
+								
 				// verificando se houve alteração 
 				if (!Helper.truncate(conteudoAtual, 10000).equals(Helper.truncate(conteudoAnterior, 10000))) {
 					conteudoFinal = conteudoAtual;
 					
 					UsuarioAplicacao.atualizaCache(aplicacaoRequest.getIdUsuarioAplicacao(), conteudoFinal);
-					UsuarioAplicacao.incluirLog(aplicacaoRequest.getIdUsuarioAplicacao(), conteudoFinal);
-					
-					messageSender.send(conteudoFinal);
+					UsuarioAplicacao.incluirLog(aplicacaoRequest.getIdUsuarioAplicacao(), conteudoFinal);			
 				}
 			} catch (Exception e) {
-				log("Erro: " + e.getMessage());
-			}
+				log("Erro: " + e.getStackTrace());
+			}			
+			
+			return conteudoFinal;
 		}
 	}
 

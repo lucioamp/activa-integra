@@ -175,7 +175,7 @@
 	<thead>
 		<tr>
 			<td width="50">URL:</td>
-			<td><input type="text" name=url id="url" style="width: 500px;" value="http://localhost:8080/acctiva-integra/wadl/nome.wadl"/></td>
+			<td><input type="text" name=url id="url" style="width: 500px;" value="http://baliu.com.br/acctiva-integra/wadl/nome.wadl"/></td>
 			<td>&nbsp;</td>
 		</tr>
 		<tr>
