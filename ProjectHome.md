@@ -1,0 +1,1 @@
+Plataforma que possibilitará a integração de serviços existentes em um Ambiente Interpessoal de Aprendizagem com qualquer serviço externo baseado nos conceitos da Web 2.0.
